@@ -4,4 +4,5 @@ Duke University course: Hydrologic Data Analysis (Fall 2019)
 Instructor: Kateri Salk
 Teaching Assistant: Cathy Chamberlin
 
-Student: 
+Student: Yixin Wen
+
