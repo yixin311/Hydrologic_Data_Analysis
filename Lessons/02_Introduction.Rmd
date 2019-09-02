@@ -18,6 +18,16 @@ What makes an effective data visualization? What are the essential components/ch
 
 Come up with a consensus list among your group members. 
 
+Accessible and attractive and logical color patterns;
+units;
+axis labels;
+legible font sizes;
+data point-size-large/small enough;
+heading (context-dependent);
+appropriate graph type;
+axis scales
+interactive
+
 Compare your list to other groups' lists. 
 
 ## Exploring web resources for visualization
@@ -26,6 +36,7 @@ Compare your list to other groups' lists.
 2. Think of a dataset that you or someone in your field might want to visualize. What types of variables does this dataset contain? What information might you want to convey with a visualization?
 
 <add notes here>
+weather data: date, cloud thickness, rainfall, location
 
 3. Scroll to the "Explore" section of the website. Follow the flow chart to find a type of graph that would suit your data. Click for more information and a link to the R Graph Gallery. If there are multiple options for graphing your data, how might you choose between them?
 
@@ -66,7 +77,7 @@ wesanderson (package)
 
 * https://github.com/karthik/wesanderson
 
-pal_futurama (function; comes in the ggsci package)
+pal_futurama (function; comes in the ggsci package)ins
 
 * https://nanx.me/ggsci/reference/pal_futurama.html
 
