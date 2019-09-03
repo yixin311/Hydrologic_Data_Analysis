@@ -39,7 +39,7 @@ Did you complete the form? (yes/no)
 
 4. Are there specific people in class who you would specifically like to have on your team?
 
-> ANSWER: Xinchen Li
+> ANSWER: Xinchen Li, Mengfan Li
 
 5. Are there specific people in class who you would specifically *not* like to have on your team?
 
@@ -64,16 +64,17 @@ EnoDischarge <- readNWISdv(siteNumbers = "02096500",
                      endDate = "2019-07-31")
 
 # Renaming columns 
-names(EnoDischarge)[4:7]<-c("Discharge","Approval.Code","Gage_height","Approval.Code")
+names(EnoDischarge)[4:7]<-c("Discharge","Approval.Code1","Gage_height","Approval.Code2")
 ```
 
 8. Add a "year" column to your data frame (hint: lubridate has a `year` function).
 
 ```{r}
+# add a "year" column to the original data frame
 library(lubridate)
-new_column=EnoDischarge[,3]
-Year=year(new_column)
-EnoDischarge <- cbind(EnoDischarge,Year)
+  new_column=EnoDischarge[,3] # apply the Date information to a new column
+  Year=year(new_column) # extract the year of dates
+  EnoDischarge <- cbind(EnoDischarge,Year) # add the Year column to EnoDischarge data frame 
 ```
 
 9. Create a ggplot of discharge vs. gage height, with gage height as the x axis. Color each point by year. Make the following edits to follow good data visualization practices: 
@@ -84,25 +85,44 @@ EnoDischarge <- cbind(EnoDischarge,Year)
 
 ```{r}
 # Build a ggplot
-EnoPlot <- 
-  ggplot(EnoDischarge, aes(x = Date, y = Discharge)) +
-         geom_line() +
-         xlab("Year")
-print(EnoPlot)
+EnoPlot1 <- 
+  ggplot(EnoDischarge)+
+    geom_point(aes(x = Gage_height, y = Discharge, color = factor(Year)), alpha = 0.5) + # change the value of alpha to change transparency 
+    xlab("Gage height (ft)") + # add units to axes
+    ylab("Discharge (ft3/s)")+
+    theme_classic()+
+    scale_color_brewer(palette = "Paired") # change the default color
+
+print(EnoPlot1)
 ```
 
 10. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: From the plot, we can see that discharge is positively correlated with gage height. The value of discharge increases with the increase of gage height.
+1. Since we need to color each point by year, we need to factorize the default continuous variable--"year", before coloring each point.
+2. The range of alpha is between 0 to 1, which indicates completely transparent to opaque. 
+3. We can use scale_color_brewer function to change the default color palette in RColorBrewer package, but we need to notice that not every palette can meet the requirements. For example, in this problem we have 11 groups, which means we need to have 11 different colors. Thus we can use "Set3", "Paired", "Spectral", etc in this problem, while "Dark2", "Accent" cannot be used due to the lack of colors.
 
 11. Create a ggplot violin plot of discharge, divided by year. (Hint: in your aesthetics, specify year as a factor rather than a continuous variable). Make the following edits to follow good data visualization practices: 
 
 * Remove x axis label
 * Add a horizontal line at the 0.5 quantile within each violin (hint: draw_quantiles)
 ```{r}
+# Build a violin plot
 
+EnoDischarge$Year <- as.factor(EnoDischarge$Year) # factorize year in EnoDischarge
+EnoPlot2 <- 
+  ggplot(EnoDischarge, aes(x = Year, y = Discharge, fill=Year))+
+    geom_violin(draw_quantiles = 0.5)+ # add horizontal lines at 0.5 quantile
+    xlab("")+ # remove x axis label
+    theme_classic()+
+    theme(legend.position = "none")
+print(EnoPlot2)    
 ```
 
 12. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: From the violin plot, we can see that the median value of discharge in each year is below 1000.The small values of discharge have high frequency in each year. The highest value of discharge of the whole dataset is in 2018.
+1. Since "year" is defaulted as a continous variable, we need to factorize it first to make divisions.
+2. draw_quantiles function can be used to draw horizontal lines of 0.25, 0.5, 0.75 quantiles.
+3. In the violin plot, the axes labels are defaulted as the same in ase function, to remove axes lables, we can use xlab("") or ylab("").
