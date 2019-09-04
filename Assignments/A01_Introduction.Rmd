@@ -50,8 +50,7 @@ Did you complete the form? (yes/no)
 6. Set up your work session. Check your working directory, load packages `tidyverse`,  `dataRetrieval`, and `lubridate`. Set your ggplot theme as theme_classic (you may need to look up how to set your theme).
 
 ```{r, message = FALSE}
-install.packages("lubridate")
-theme_set(theme_classic())
+#theme_set(theme_classic())
 ```
 
 7. Upload discharge data for the Eno River at site 02096500 for the same dates as we studied in class (2009-08-01 through 2019-07-31). Obtain data for discharge and gage height (you will need to look up these parameter codes). Rename the columns with informative titles. Imperial units can be retained (no need to change to metric).
