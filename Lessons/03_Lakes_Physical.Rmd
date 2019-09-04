@@ -19,6 +19,9 @@ editor_options:
 What is a lake? How does this differ from a stream, river, or wetland?
 
 What are the physical properties of lakes?
+1. little flow compared to volume
+2. vegetation: wetland have merge vegetation
+3. light: distinguish shallow wetland from lakes 
 
 ## Session Set Up
 ```{r, message = FALSE}
@@ -49,22 +52,22 @@ Common steps/checks for data wrangling:
 ```{r}
 # Is the date column perceived as a date by R?
 class(NTLdata$sampledate)
-NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y")
+NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y") # "%m/%d/%y" dates format
 class(NTLdata$sampledate)
 # What does this column look like now?
 
 # Remove rows that contain NAs in temperature column
 dim(NTLdata)
-NTLdata <- NTLdata %>%
-  drop_na(temperature_C)
-dim(NTLdata)  
+NTLdata <- NTLdata %>% 
+  drop_na(temperature_C) # drop NA in temperature_C column
+dim(NTLdata)   
 
 # How many observations are there for each lake?
 summary(NTLdata$lakename)
 
 # Let's choose the three lakes with data
 NTLdata <- NTLdata %>%
-  filter(lakename %in% c("Paul Lake", "Peter Lake", "Tuesday Lake"))
+  filter(lakename %in% c("Paul Lake", "Peter Lake", "Tuesday Lake")) # %in% : includes
 
 # What is another way to use the filter command to get to the same result?
 NTLdata <- NTLdata %>%
@@ -88,7 +91,7 @@ max(Tuesdaydata$sampledate)
 unique(Pauldata$depth)
 unique(Peterdata$depth)
 unique(Tuesdaydata$depth)
-# Why didn't we use the "summary" function here?
+# Why didn't we use the "summary" function here? it will give max, min, median etc, not specific data
 ```
 
 ### Exploratory data visualization
@@ -98,7 +101,7 @@ Let's make a plot of temperatures by depth. There are a lot of points, so adding
 TempvsDepth <- 
   ggplot(Pauldata, aes(x = depth, y = temperature_C)) + 
   geom_point(alpha = 0.5) +
-  labs(y = expression("Temperature "(degree*C)), x = "Depth (m)")
+  labs(y = expression("Temperature "(degree*C)), x = "Depth (m)") # * degree symbol
 print(TempvsDepth)
 ```
 
@@ -122,6 +125,7 @@ Pauldata.bottom <- filter(Pauldata2000s, depth == 12)
 
 Now let's plot a few of the data frames on the same ggplot. How do temperatures at the surface compare to those at 2 m depth? How do temperatures at the bottom compare to those at 9 m depth?
 <add notes here>
+At 9 m depth, very little difference, on the surface layer, great difference
 
 Here we are highlighting depths considered the **epilimnion** and **hypolimnion**.
 ```{r}
@@ -158,6 +162,7 @@ print(Tempplot.thermocline)
 
 Why can't we use a line graph here?
 <add notes here>
+cause we don't know the links between each data, and the line graph connects each point which is not the same as reality.
 ```{r}
 Tempplot.line <- 
   ggplot(Pauldata.surface, aes(x = sampledate, y = temperature_C)) +
@@ -240,7 +245,7 @@ print(Tempprofiles2016)
 
 Paul Lake, like many lakes in temperate climates, is **dimictic**. What does this mean? What evidence do you see of this phenomenon in the graph? If you had data from the rest of the year, what would you expect to see?
 <add notes here>
-
+dimictic: mixes twice a year. as the air cools, the water density becomes smaller between the surface and the bottom. 
 
 Let's put your prediction to the test. In 1993, the lake was sampled in November. Wrangle your data to capture this date and create a profile graph of that date.
 ```{r}
@@ -249,7 +254,7 @@ Let's put your prediction to the test. In 1993, the lake was sampled in November
 
 Why does mixing occur in the spring and fall? What are the mechanisms that make this possible?
 <add notes here>
-
+1. wind-driven 2. small density gradient
 ## Closing Discussion
 
 What are the main concepts you learned about the physical properties of lakes today? What was the evidence for these concepts in the dataset?
