@@ -39,7 +39,7 @@ Did you complete the form? (yes/no)
 
 4. Are there specific people in class who you would specifically like to have on your team?
 
-> ANSWER: Xinchen Li, Mengfan Li
+> ANSWER: Gabriela Garcia, Mengfan Li
 
 5. Are there specific people in class who you would specifically *not* like to have on your team?
 
@@ -50,7 +50,13 @@ Did you complete the form? (yes/no)
 6. Set up your work session. Check your working directory, load packages `tidyverse`,  `dataRetrieval`, and `lubridate`. Set your ggplot theme as theme_classic (you may need to look up how to set your theme).
 
 ```{r, message = FALSE}
-#theme_set(theme_classic())
+getwd()
+library(tidyverse)
+library(dataRetrieval)
+library(zoo)
+library(ggrepel)
+library(lubridate)
+theme_set(theme_classic())
 ```
 
 7. Upload discharge data for the Eno River at site 02096500 for the same dates as we studied in class (2009-08-01 through 2019-07-31). Obtain data for discharge and gage height (you will need to look up these parameter codes). Rename the columns with informative titles. Imperial units can be retained (no need to change to metric).
@@ -89,7 +95,6 @@ EnoPlot1 <-
     geom_point(aes(x = Gage_height, y = Discharge, color = factor(Year)), alpha = 0.5) + # change the value of alpha to change transparency 
     xlab("Gage height (ft)") + # add units to axes
     ylab("Discharge (ft3/s)")+
-    theme_classic()+
     scale_color_brewer(palette = "Paired") # change the default color
 
 print(EnoPlot1)
@@ -114,14 +119,13 @@ EnoPlot2 <-
   ggplot(EnoDischarge, aes(x = Year, y = Discharge, fill=Year))+
     geom_violin(draw_quantiles = 0.5)+ # add horizontal lines at 0.5 quantile
     xlab("")+ # remove x axis label
-    theme_classic()+
     theme(legend.position = "none")
 print(EnoPlot2)    
 ```
 
 12. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: From the violin plot, we can see that the median value of discharge in each year is below 1000.The small values of discharge have high frequency in each year. The highest value of discharge of the whole dataset is in 2018.
+> ANSWER: Violin plot is benefical in showning the highest value, lowest value and value distribution. From the violin plot, we can see that the median value of discharge in each year is below 1000.The small values of discharge have high frequency in each year. The highest value of discharge of the whole dataset is in 2018.
 1. Since "year" is defaulted as a continous variable, we need to factorize it first to make divisions.
-2. draw_quantiles function can be used to draw horizontal lines of 0.25, 0.5, 0.75 quantiles.
+2. Draw_quantiles function can be used to draw horizontal lines of 0.25, 0.5, 0.75 quantiles.
 3. In the violin plot, the axes labels are defaulted as the same in ase function, to remove axes lables, we can use xlab("") or ylab("").
