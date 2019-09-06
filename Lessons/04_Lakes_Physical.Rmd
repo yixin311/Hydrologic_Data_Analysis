@@ -14,8 +14,14 @@ editor_options:
 3. Apply data analytics skills to questions about physical properties of lakes
 4. Communicate findings with peers through oral, visual, and written modes
 
+
 ## Opening Discussion
 We analyzed temperature profiles and seasonal changes on Wednesday. What were some key takeaway points about thermal stratification and mixing?
+
+1.mixing in surface in bottom, thermal is defined by more than 1 degree change more than 1 meter, a chunk in thermal line.
+2.surface area in apolimian, not always have hipolimian, cause it's shallow.
+3. spring and fall mixing, lakes mix twice because of small density gradient and wind.
+4. The 4 degree C, liquid water most dense at 4 *C
 
 ## Session Set Up
 ```{r, message = FALSE}
@@ -70,7 +76,7 @@ Lightprofiles2016 <-
   geom_point() +
   scale_y_reverse() +
   scale_x_continuous(position = "top") +
-  scale_color_viridis_c(end = 0.8, option = "magma") +
+  scale_color_viridis_c(end = 0.8, option = "magma") + # end point (0,1)
   labs(x = expression("Irradiance (W m"^-2*")"), y = "Depth (m)") +
   theme(legend.position = "none", 
         axis.text.y = element_blank(), axis.title.y = element_blank())
@@ -89,22 +95,24 @@ print(Oxygenprofiles2016)
 
 Physicalprofiles2016 <- 
   plot_grid(Tempprofiles2016, Lightprofiles2016, Oxygenprofiles2016, 
-            ncol = 3, rel_widths = c(1.25, 1, 1.5))
+            ncol = 3, rel_widths = c(1.25, 1, 1.5)) # plot_grid 
+# widths: 
 print(Physicalprofiles2016)
 
 ```
 
 How do temperature profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
+> on the surface, the temperature range of is larger than it is in the bottom. temperature is increasing as it is closer to the surface.
+
 
 How do irradiance profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
+> 1. highest radiance in the surface and lowest in the bottom. water reflects light. 2. light penetration. 3.if there is biomass, light will go down deeper in the lake since algae still reflects light. 4. 
 
 How do dissolved oxygen profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
+> o2: chemical and biological active. From May to Aug, O2 decreases, water temperauture increases, o2 saturation decreases. 2. photosynthesis, enough light grow, nutrient, in 5 meters wrack. hipolimian ?.3. alage sinks down, nutrient release again; pytoplankon decreases below 5 m, no enough o2 supply, DO decreases. 
 
 
 ## Data Analysis
@@ -122,7 +130,19 @@ Steps:
 5. Create a ggplot of surface temps by date and facet by month. Add `geom_smooth(se = FALSE, method = lm)` to the plot to display the regression line.
 
 ```{r}
+# add month column
+new_column=Pauldata[,5]
+Month=month(new_column)
+Pauldata <- cbind(Pauldata,Month)
 
+# Filter
+Pauldata <- filter(Pauldata, depth == "0")
+Pauldata.may <- filter(Pauldata, Month == 5)
+Pauldata.june <- filter(Pauldata, Month == 6)
+Pauldata.july <- filter(Pauldata, Month == 7)
+Pauldata.aug <- filter(Pauldata, Month == 8)
+
+# 
 
 
 ```
