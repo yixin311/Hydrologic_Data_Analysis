@@ -91,7 +91,7 @@ max(Tuesdaydata$sampledate)
 unique(Pauldata$depth)
 unique(Peterdata$depth)
 unique(Tuesdaydata$depth)
-# Why didn't we use the "summary" function here? it will give max, min, median etc, not specific data
+# Why didn't we use the "summary" function here? cause it is number and it will give max, min, median etc, not data cluster
 ```
 
 ### Exploratory data visualization

@@ -28,7 +28,22 @@ The completed exercise is due on 11 September 2019 at 9:00 am.
 4. Set your ggplot theme (can be theme_classic or something else)
 
 ```{r}
+# Check working directory
+getwd()
 
+# load packages
+library(tidyverse)
+library(lubridate)
+library(cowplot)
+
+# Load data
+NTLdata <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
+# Set the date column to the date format
+NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y") # "%m/%d/%y" dates format
+
+# set ggplot theme
+theme_set(theme_classic())
 ```
 
 ## Creating and analyzing lake temperature profiles
@@ -38,6 +53,11 @@ The completed exercise is due on 11 September 2019 at 9:00 am.
 5. Choose either Peter or Tuesday Lake. Create a new data frame that wrangles the full data frame so that it only includes that lake during two different years (one year from the early part of the dataset and one year from the late part of the dataset).
 
 ```{r}
+summary(NTLdata$lakename)
+unique(NTLdata$year4)
+
+NTLdata <- NTLdata %>%
+  filter(lakename %in% c("Peter Lake", "Tuesday Lake"))
 
 ```
 
