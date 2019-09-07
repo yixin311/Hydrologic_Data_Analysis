@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Physical Properties of Lakes"
-author: "Student Name"
+author: "Yixin Wem"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -56,9 +56,11 @@ theme_set(theme_classic())
 summary(NTLdata$lakename)
 unique(NTLdata$year4)
 
-NTLdata <- NTLdata %>%
-  filter(lakename %in% c("Peter Lake", "Tuesday Lake"))
+# choose Peter Lake with year 1987 and 2014
+Peterlake <- NTLdata %>%
+  filter(lakename == "Peter Lake" & year4 %in% c(1987,2014) ) 
 
+# figure out the function of c, |, &!!
 ```
 
 6. Create three graphs: (1) temperature profiles for the early year, (2) temperature profiles for the late year, and (3) a `plot_grid` of the two graphs together. Choose `geom_point` and color your points by date. 
@@ -66,7 +68,40 @@ NTLdata <- NTLdata %>%
 Remember to edit your graphs so they follow good data visualization practices.
 
 ```{r}
+# Temperature profiles for Peter 1987
+Peter1987 <- Peterlake %>%
+  filter(year4==1987)
+  
+Tempprofiles1987 <- 
+  ggplot(Peter1987, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("Peter Lake Temperature in 1987"(degree*C)), y = "Depth (m)",color = "Julian Day") +
+  theme(legend.position = "none")
+print(Tempprofiles1987)
 
+# Temperature profiles for Peter 2014
+Peter2014 <- Peterlake %>%
+  filter(year4==2014)
+
+Tempprofiles2014 <- 
+  ggplot(Peter2014, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("Peter Lake Temperature in 2014"(degree*C)), y = "Depth (m)",color = "Julian Day") +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+print(Tempprofiles2014)
+
+# plot_grid of 2 graphs
+Peterprofiles <- 
+  plot_grid(Tempprofiles1987, Tempprofiles2014,
+            ncol = 2, rel_widths = c(1,1.1))
+ 
+print(Peterprofiles)
 ```
 
 7. Interpret the stratification patterns in your graphs in light of seasonal trends. In addition, do you see differences between the two years?
@@ -78,12 +113,31 @@ Remember to edit your graphs so they follow good data visualization practices.
 8. On July 25, 26, and 27 in 2016, all three lakes (Peter, Paul, and Tuesday) were sampled. Wrangle your data frame to include just these three dates.
 
 ```{r}
-
+Threedays <- NTLdata %>%
+  filter(sampledate >= "2016-07-25" & sampledate <="2016-07-27")
+  
 ```
 
 9. Plot a profile line graph of temperature by depth, one line per lake. Each lake can be designated by a separate color.
 
 ```{r}
+Threedays.Peter <- filter(Threedays, lakename == "Peter Lake")
+Threedays.Paul <- filter(Threedays, lakename == "Paul Lake")
+Threedays.Tuesday <- filter(Threedays, lakename == "Tuesday Lake")
+
+Temptrend.Peter <- lm(data = Threedays.Peter, temperature_C ~ depth)
+summary(Temptrend.Peter)
+
+Temptrend.Paul <- lm(data = Threedays.Paul, temperature_C ~ depth)
+summary(Temptrend.Paul)
+
+Temptrend.Tuesday <- lm(data = Threedays.Tuesday, temperature_C ~ depth)
+summary(Temptrend.Tuesday)
+
+ggplot(Threedays, aes(x = depth, y = temperature_C, color= lakename)) +
+  geom_smooth(se = FALSE)+
+  labs(y = expression("Temperature "(degree*C)), x = "Depth (m)", 
+       color = "Lake")
 
 ```
 
