@@ -99,7 +99,7 @@ print(Tempprofiles2014)
 # plot_grid of 2 graphs
 Peterprofiles <- 
   plot_grid(Tempprofiles1987, Tempprofiles2014,
-            ncol = 2, rel_widths = c(1,1.1))
+            ncol = 2, rel_widths = c(1,1.2))
  
 print(Peterprofiles)
 ```
@@ -121,6 +121,11 @@ Threedays <- NTLdata %>%
 9. Plot a profile line graph of temperature by depth, one line per lake. Each lake can be designated by a separate color.
 
 ```{r}
+ggplot(Threedays, aes(x = depth, y = temperature_C, color= lakename)) +
+  geom_smooth(se = FALSE)+
+  labs(y = expression("Temperature "(degree*C)), x = "Depth (m)", 
+       color = "Lake")
+
 Threedays.Peter <- filter(Threedays, lakename == "Peter Lake")
 Threedays.Paul <- filter(Threedays, lakename == "Paul Lake")
 Threedays.Tuesday <- filter(Threedays, lakename == "Tuesday Lake")
@@ -134,11 +139,6 @@ summary(Temptrend.Paul)
 Temptrend.Tuesday <- lm(data = Threedays.Tuesday, temperature_C ~ depth)
 summary(Temptrend.Tuesday)
 
-ggplot(Threedays, aes(x = depth, y = temperature_C, color= lakename)) +
-  geom_smooth(se = FALSE)+
-  labs(y = expression("Temperature "(degree*C)), x = "Depth (m)", 
-       color = "Lake")
-
 ```
 
 10. What is the depth range of the epilimnion in each lake? The thermocline? The hypolimnion?
@@ -149,7 +149,32 @@ ggplot(Threedays, aes(x = depth, y = temperature_C, color= lakename)) +
 11. Run the same analyses we ran in class to determine if surface lake temperatures for a given month have increased over time ("Long-term change in temperature" section of day 4 lesson in its entirety), this time for either Peter or Tuesday Lake. 
 
 ```{r}
+Petersurface <- NTLdata %>%
+  mutate(Month = month(sampledate)) %>%
+  filter(lakename == "Peter Lake" & depth == 0 & Month <= 8 & Month >= 5)
 
+ggplot(Petersurface, aes(x = sampledate, y = temperature_C)) +
+  geom_point() +
+  facet_grid(rows = vars(Month)) +
+  geom_smooth(se = FALSE, method = lm)+
+  labs(y = expression("Temperature "(degree*C)), x = "Year")
+
+Petersurface.May <- filter(Petersurface, Month == 5)
+Petersurface.June <- filter(Petersurface, Month == 6)
+Petersurface.July <- filter(Petersurface, Month == 7)
+Petersurface.August <- filter(Petersurface, Month == 8)
+
+Temptrend.May <- lm(data = Petersurface.May, temperature_C ~ year4)
+summary(Temptrend.May)
+
+Temptrend.June <- lm(data = Petersurface.June, temperature_C ~ year4)
+summary(Temptrend.June)
+
+Temptrend.July <- lm(data = Petersurface.July, temperature_C ~ year4)
+summary(Temptrend.July)
+
+Temptrend.August <- lm(data = Petersurface.August, temperature_C ~ year4)
+summary(Temptrend.August)
 ```
 
 12. How do your results compare to those we found in class for Paul Lake? Do similar trends exist for both lakes?
