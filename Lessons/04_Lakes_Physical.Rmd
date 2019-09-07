@@ -96,7 +96,7 @@ print(Oxygenprofiles2016)
 Physicalprofiles2016 <- 
   plot_grid(Tempprofiles2016, Lightprofiles2016, Oxygenprofiles2016, 
             ncol = 3, rel_widths = c(1.25, 1, 1.5)) # plot_grid 
-# widths: 
+ 
 print(Physicalprofiles2016)
 
 ```
@@ -135,15 +135,33 @@ new_column=Pauldata[,5]
 Month=month(new_column)
 Pauldata <- cbind(Pauldata,Month)
 
-# Filter
+#  create 4 separate data frames
 Pauldata <- filter(Pauldata, depth == "0")
 Pauldata.may <- filter(Pauldata, Month == 5)
 Pauldata.june <- filter(Pauldata, Month == 6)
 Pauldata.july <- filter(Pauldata, Month == 7)
 Pauldata.aug <- filter(Pauldata, Month == 8)
 
-# 
+# add linear regression
+trend.may <-lm(formula = temperature_C ~ year4, data = Pauldata.may)
+summary(trend.may)
 
+trend.june <-lm(formula = temperature_C ~ year4, data = Pauldata.june)
+summary(trend.june)
+
+trend.july <-lm(formula = temperature_C ~ year4, data = Pauldata.july)
+summary(trend.july)
+
+trend.aug <-lm(formula = temperature_C ~ year4, data = Pauldata.aug)
+summary(trend.aug)
+
+plot1 <-
+  ggplot(Pauldata, aes(x = sampledate, y = temperature_C)) +
+  geom_point() +
+  facet_grid(rows = vars(Month)) +
+  geom_smooth(se = FALSE, method = lm)
+
+print(plot1)
 
 ```
 
