@@ -38,7 +38,9 @@ library(cowplot)
 
 # Load data
 NTLdata <- 
-  read.csv("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+  read.csv(paste0("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data ", "Analysis/Hydrologic_Data_Analysis/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"))
+
+readr::read_csv
 
 # Set the date column to the date format
 NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y") # "%m/%d/%y" dates format
