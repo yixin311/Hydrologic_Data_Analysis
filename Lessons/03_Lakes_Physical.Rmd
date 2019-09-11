@@ -245,6 +245,7 @@ print(Tempprofiles2016)
 
 Paul Lake, like many lakes in temperate climates, is **dimictic**. What does this mean? What evidence do you see of this phenomenon in the graph? If you had data from the rest of the year, what would you expect to see?
 <add notes here>
+
 dimictic: mixes twice a year. as the air cools, the water density becomes smaller between the surface and the bottom. 
 
 Let's put your prediction to the test. In 1993, the lake was sampled in November. Wrangle your data to capture this date and create a profile graph of that date.
