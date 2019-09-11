@@ -53,6 +53,7 @@ theme_set(theme_classic())
 5. Choose either Peter or Tuesday Lake. Create a new data frame that wrangles the full data frame so that it only includes that lake during two different years (one year from the early part of the dataset and one year from the late part of the dataset).
 
 ```{r}
+# see how many years and categories of lakes included
 summary(NTLdata$lakename)
 unique(NTLdata$year4)
 
@@ -60,7 +61,6 @@ unique(NTLdata$year4)
 Peterlake <- NTLdata %>%
   filter(lakename == "Peter Lake" & year4 %in% c(1987,2014) ) 
 
-# figure out the function of c, |, &!!
 ```
 
 6. Create three graphs: (1) temperature profiles for the early year, (2) temperature profiles for the late year, and (3) a `plot_grid` of the two graphs together. Choose `geom_point` and color your points by date. 
@@ -78,8 +78,7 @@ Tempprofiles1987 <-
   scale_y_reverse() +
   scale_x_continuous(position = "top") +
   scale_color_viridis_c(end = 0.8, option = "magma") +
-  labs(x = expression("Peter Lake Temperature in 1987"(degree*C)), y = "Depth (m)",color = "Julian Day") +
-  theme(legend.position = "none")
+  labs(x = expression("Peter Lake Temperature in 1987"(degree*C)), y = "Depth (m)",color = "Ordinal Day") 
 print(Tempprofiles1987)
 
 # Temperature profiles for Peter 2014
@@ -92,11 +91,28 @@ Tempprofiles2014 <-
   scale_y_reverse() +
   scale_x_continuous(position = "top") +
   scale_color_viridis_c(end = 0.8, option = "magma") +
-  labs(x = expression("Peter Lake Temperature in 2014"(degree*C)), y = "Depth (m)",color = "Julian Day") +
-  theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+  labs(x = expression("Peter Lake Temperature in 2014"(degree*C)), y = "Depth (m)",color = "Ordinal Day") 
 print(Tempprofiles2014)
 
 # plot_grid of 2 graphs
+Tempprofiles1987 <- 
+  ggplot(Peter1987, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("Peter Lake Temperature in 1987"(degree*C)), y = "Depth (m)",color = "Ordinal Day") +
+  theme(legend.position = "none")
+
+Tempprofiles2014 <- 
+  ggplot(Peter2014, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("Peter Lake Temperature in 2014"(degree*C)), y = "Depth (m)",color = "Ordinal Day") +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+
 Peterprofiles <- 
   plot_grid(Tempprofiles1987, Tempprofiles2014,
             ncol = 2, rel_widths = c(1,1.2))
@@ -106,7 +122,7 @@ print(Peterprofiles)
 
 7. Interpret the stratification patterns in your graphs in light of seasonal trends. In addition, do you see differences between the two years?
 
-> 
+> In 1987, the stratification of Peter Lake gets stronger from May to June, and becomes weaker from June to August.In May, the surface water becomes warmer, and wind can mix the layers. In September, the epilimnion cools and becomes more dense and sinks to the hypolimnion, which can mix the layer with the help of wind, and thus the temperature difference is small. In 2014, the stratification of Peter Lake became stronger from May to July, and became slightly weaker from July to August. In 1987, the stratification of Peter Lake was weak in July and August due to the wind and water density, while in 2014, the stratification of Peter Lake was much more obvious in July and August compared to that in 1987,this may because the summer lasts longer in 2014 than in 1987. 
 
 ### Multiple lakes, single date 
 
@@ -126,24 +142,11 @@ ggplot(Threedays, aes(x = depth, y = temperature_C, color= lakename)) +
   labs(y = expression("Temperature "(degree*C)), x = "Depth (m)", 
        color = "Lake")
 
-Threedays.Peter <- filter(Threedays, lakename == "Peter Lake")
-Threedays.Paul <- filter(Threedays, lakename == "Paul Lake")
-Threedays.Tuesday <- filter(Threedays, lakename == "Tuesday Lake")
-
-Temptrend.Peter <- lm(data = Threedays.Peter, temperature_C ~ depth)
-summary(Temptrend.Peter)
-
-Temptrend.Paul <- lm(data = Threedays.Paul, temperature_C ~ depth)
-summary(Temptrend.Paul)
-
-Temptrend.Tuesday <- lm(data = Threedays.Tuesday, temperature_C ~ depth)
-summary(Temptrend.Tuesday)
-
 ```
 
 10. What is the depth range of the epilimnion in each lake? The thermocline? The hypolimnion?
 
->
+> In Paul Lake, the depth range of the epilimnion is about 0-2.5m, the depth of the thermocline is about 2.5-7.5m, the depth range of hypolimnion is above 7.5m. In Peter Lake, the depth range of epilimnion is 0-2m, the depth of the thermocline is about 2-7m, the depth range of hypolimnion is above 7m.In Tuesday Lake, it does not have epilimnion layer, the depth of the thermocline is about 0-5m, the depth range of hypolimnion is above 5m. 
 
 ## Trends in surface temperatures over time. 
 11. Run the same analyses we ran in class to determine if surface lake temperatures for a given month have increased over time ("Long-term change in temperature" section of day 4 lesson in its entirety), this time for either Peter or Tuesday Lake. 
@@ -157,7 +160,7 @@ ggplot(Petersurface, aes(x = sampledate, y = temperature_C)) +
   geom_point() +
   facet_grid(rows = vars(Month)) +
   geom_smooth(se = FALSE, method = lm)+
-  labs(y = expression("Temperature "(degree*C)), x = "Year")
+  labs(y = expression("Temperature "(degree*C)), x = "Sample Date")
 
 Petersurface.May <- filter(Petersurface, Month == 5)
 Petersurface.June <- filter(Petersurface, Month == 6)
@@ -179,4 +182,4 @@ summary(Temptrend.August)
 
 12. How do your results compare to those we found in class for Paul Lake? Do similar trends exist for both lakes?
 
-> 
+> From the graph, the overall highest surface water temperature is in July and August, and the lowest is in May in both Paul Lake and Peter Lake. For Peter Lake, the surface water temperature in July and August slightly increase over the period, and in the other months, the surfacewater temperature does not change obviously. In Paul Lake, the surface temperature slightly decreases over the period in June.
