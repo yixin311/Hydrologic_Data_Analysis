@@ -15,6 +15,9 @@ editor_options:
 
 ## Opening Discussion
 How is climate change impacting discharge in streams and rivers? What are the new and ongoing challenges faced by these impacts in watersheds?
+1. Salk River, very seasonal before 2015 ,after 2015, more variable, impact flood control
+2. mountainous region, impact magnitude, timing of the flood, impact farmer, change regular pattern, potential uses
+3. unpredicable precipitation, more effort on civil engineering control on watersheds
 
 ## Session Set Up
 
@@ -33,13 +36,15 @@ theme_set(theme_classic())
 
 A **recurrence interval** is the past recurrence of an event, in this case a peak annual discharge measurement of a given magnitude. The value of a recurrence interval corresponds to the average number of years between discharge of a given magnitude. Typically the minimum amount of years required to construct a recurrence interval is 10, but 30 is more robust. A recurrence interval, T, is calculated as: 
 
+>the more years we have, more information we get, like weird events, we can get more suitable model use.
+
 $T = (n+1)/m$
 
 where n is the number of years and m is the ranking of an event within the observed period. We add one to n because we are computing the recurrence interval for a discharge event of a given magnitude *or greater*. 
 
 Similarly, we can calculate an **exceedence probability**, or the probability of encountering a discharge event of a given magnitude or greater in any given year: 
 
-$P = 1/T$
+$P = 1/T= m/(n+1)$
 
 This is where the terms "100-year flood" and similar are derived. Remember this is a probability based on past occurrence, not an accurate forecast of how often we will see that event happening. When current patterns of discharge differ from past patterns, we observe **nonstationary** behavior. Nonstationarity results in events that occur more or less frequency than predicted based on the exceedence probability.
 
@@ -65,6 +70,7 @@ EnoPlot <-
          xlab("Year")
 print(EnoPlot)
 ```
+the highest one near 2000, the smallest is near 1980, overall is very variable. no real consistent pattern. 
 
 We can then compute recurrence intervals based on the first 30 years of data.
 
@@ -77,7 +83,7 @@ EnoRecurrence <-
   EnoDischarge %>%
   filter(Year < 1993) %>%
   group_by(Year) %>%
-  summarise(PeakDischarge = max(Discharge)) %>% 
+  summarise(PeakDischarge = max(Discharge)) %>% # 30 numbers
   mutate(Rank = rank(-PeakDischarge), 
          RecurrenceInterval = (length(Year) + 1)/Rank, 
          Probability = 1/RecurrenceInterval)
@@ -98,10 +104,11 @@ EnoRecurrencePlot <-
 print(EnoRecurrencePlot)
 
 Eno.RImodel <- lm(data = EnoRecurrence, PeakDischarge ~ log(RecurrenceInterval))
-summary(Eno.RImodel)
+summary(Eno.RImodel) # large R-squared and small p-value indicates that log is a good model
 
 #What is the discharge for a 100-year flood in this system? a 500-year flood?
-Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(100)
+# the 1st coeff is the estimate y intercept of the model. the 2nd coeff is the estimate log(RecurrenceInterval)
+Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(100) 
 Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(500)
 ```
 
@@ -121,6 +128,7 @@ EnoRecurrencePlot.Full <-
   geom_point(data = EnoRecurrence.Full, color = "#02818a",
              aes(x = RecurrenceInterval, y = PeakDischarge))
 print(EnoRecurrencePlot.Full)
+# deeper slope
 
 Eno.RImodel.Full <- lm(data = EnoRecurrence.Full, PeakDischarge ~ log(RecurrenceInterval))
 summary(Eno.RImodel.Full)
@@ -132,16 +140,17 @@ Eno.RImodel.Full$coefficients[1] + Eno.RImodel.Full$coefficients[2]*log(500)
 
 Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(100)
 Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(500)
-
+# we usually underpredict the discharge based on the current data
 ```
 
 What differences did you see for the recurrence intervals built under different periods of record? How would your prediction of flood events differ if you were to use these models for forecasting purposes? 
 
->
+>under more years, we can get more information and get more suitable model. if we use smaller period of data, the prediction discharge would be smaller, as we usually underpredict the discharge based on the smaller periods.
 
 What would you recommend for a watershed manager seeking to build the most accurate recurrence interval model for the Eno River?
 
-> 
+> 1. use the longer records for your stream, looking for other similar river if they have same trends.
+2. use the newest data to analysis, use the more recent data.  
 
 
 ### Examining the effects of urbanization on discharge
@@ -164,7 +173,69 @@ SaladoPlot <-
 print(SaladoPlot)
 
 # add more code here: 
+SaladoDischarge <- 
+  SaladoDischarge %>%
+  mutate(Year = year(Date))
 
+# for the first 30 years
+SaladoRecurrence_first30 <- 
+  SaladoDischarge %>%
+  filter(Year < 1993) %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>% # 30 numbers
+  mutate(Rank = rank(-PeakDischarge), 
+         RecurrenceInterval = (length(Year) + 1)/Rank, 
+         Probability = 1/RecurrenceInterval)
+
+SaladoRecurrencePlot <- 
+  ggplot(SaladoRecurrence_first30, aes(x = RecurrenceInterval, y = PeakDischarge)) +
+  geom_point() #+
+  #scale_x_log10() 
+print(SaladoRecurrencePlot)
+
+SaladoPeakPlot_first30 <- 
+  ggplot(SaladoRecurrence_first30, aes(x = Year, y = PeakDischarge)) +
+         geom_bar(stat = "identity") +
+         xlab("Year")
+print(SaladoPeakPlot_first30)
+
+Salado_first30.RImodel <- lm(data = SaladoRecurrence_first30, PeakDischarge ~ log(RecurrenceInterval))
+summary(Salado_first30.RImodel) # large R-squared and small p-value indicates that log is a good model
+
+Salado_first30.RImodel$coefficients[1] + Salado_first30.RImodel$coefficients[2]*log(100) 
+Salado_first30.RImodel$coefficients[1] + Salado_first30.RImodel$coefficients[2]*log(500)
+
+# for the most latest 30 year
+SaladoRecurrence_latest30 <- 
+  SaladoDischarge %>%
+  filter(Year > 1989) %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>% # 30 numbers
+  mutate(Rank = rank(-PeakDischarge), 
+         RecurrenceInterval = (length(Year) + 1)/Rank, 
+         Probability = 1/RecurrenceInterval)
+
+SaladoRecurrencePlot <- 
+  ggplot(SaladoRecurrence_first30, aes(x = RecurrenceInterval, y = PeakDischarge)) +
+  geom_point()+
+  geom_point(data = SaladoRecurrence_latest30, color = "#02818a",
+             aes(x = RecurrenceInterval, y = PeakDischarge))
+print(SaladoRecurrencePlot)
+
+SaladoPeakPlot_latest30 <- 
+  ggplot(SaladoRecurrence_latest30, aes(x = Year, y = PeakDischarge)) +
+         geom_bar(stat = "identity") +
+         xlab("Year")
+print(SaladoPeakPlot_latest30)
+
+Salado_latest30.RImodel <- lm(data = SaladoRecurrence_latest30, PeakDischarge ~ log(RecurrenceInterval))
+summary(Salado_latest30.RImodel) # large R-squared and small p-value indicates that log is a good model
+
+Salado_first30.RImodel$coefficients[1] + Salado_first30.RImodel$coefficients[2]*log(100) 
+Salado_first30.RImodel$coefficients[1] + Salado_first30.RImodel$coefficients[2]*log(500)
+
+Salado_latest30.RImodel$coefficients[1] + Salado_latest30.RImodel$coefficients[2]*log(100) 
+Salado_latest30.RImodel$coefficients[1] + Salado_latest30.RImodel$coefficients[2]*log(500)
 ```
 
 ### Examining the effects of dam construction on recurrence intervals
