@@ -1,6 +1,6 @@
 ---
 title: "Assignment 3: Physical Properties of Rivers"
-author: "Student Name"
+author: "Yixin Wen"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,8 +29,27 @@ The completed exercise is due on 18 September 2019 at 9:00 am.
 5. Build a ggplot of discharge over the entire period of record. 
 
 ```{r}
+getwd()
 
+library(tidyverse)
+library(dataRetrieval)
+library(cowplot)
+library(lubridate)
 
+theme_set(theme_classic())
+
+MysterySiteDischarge <- readNWISdv(siteNumbers = "03431700",
+                                  parameterCd = "00060",
+                                  startDate = "",
+                                  endDate = "")
+
+names(MysterySiteDischarge)[4:5] <- c("Discharge", "Approval.Code")
+
+MysterySitePlot <- 
+  ggplot(MysterySiteDischarge, aes(x = Date, y = Discharge)) +
+  geom_line() +
+  labs(x = "Year", y = expression("Discharge (ft"^3*"/s)")) 
+print(MysterySitePlot)
 ```
 
 ## Analyze seasonal patterns in discharge
@@ -39,7 +58,22 @@ The completed exercise is due on 18 September 2019 at 9:00 am.
 6. Create a new data frame called "MysterySiteDischarge.Pattern" that has columns for Day.of.Year, median discharge for a given day of year, 75th percentile discharge for a given day of year, and 25th percentile discharge for a given day of year. Hint: the summarise function includes `quantile`, wherein you must specify `probs` as a value between 0 and 1.
 7. Create a plot of median, 75th quantile, and 25th quantile discharges against day of year. Median should be black, other lines should be gray. 
 ```{r}
+MysterySiteDischarge <-
+  MysterySiteDischarge %>%
+  mutate(Year = year(Date), Day.of.Year = yday(Date))
 
+MysterySiteDischarge.Pattern <- 
+  MysterySiteDischarge %>%
+  group_by(Day.of.Year) %>%
+  summarise( Q25.Discharge = quantile(Discharge, 0.25), Median.Discharge  = quantile(Discharge, 0.50), Q75.Discharge = quantile(Discharge, 0.75))
+
+MysterySitePatternPlot <- 
+  ggplot(MysterySiteDischarge.Pattern, aes(x= Day.of.Year))+
+      geom_line(aes(y = Q25.Discharge), color = "gray")+
+      geom_line(aes( y = Median.Discharge), color = "black")+
+      geom_line(aes(y = Q75.Discharge),alpha = 0.5, color = "gray")+
+      labs(x = "Day of Year", y = expression("Discharge (ft"^3*"/s)"))
+print(MysterySitePatternPlot)  
 
 ```
 
@@ -56,7 +90,37 @@ The completed exercise is due on 18 September 2019 at 9:00 am.
 11. Create a model to predict the discharge for a 100-year flood for both sets of recurrence intervals. 
 
 ```{r}
+MysterySite.Annual.30yr <-
+  MysterySiteDischarge %>%
+  filter(Year < 1994) %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>%
+  mutate(Rank = rank(-PeakDischarge),
+         RecurrenceInterval = (length(Year) + 1)/Rank,
+         ExceedenceProbability = 1/RecurrenceInterval)
 
+MysterySite.Annual.Full <-
+  MysterySiteDischarge %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>%
+  mutate(Rank = rank(-PeakDischarge),
+         RecurrenceInterval = (length(Year) + 1)/Rank,
+         ExceedenceProbability = 1/RecurrenceInterval)
+
+MysterySiteRecurrencePlot <- 
+  ggplot(MysterySite.Annual.30yr, aes(x = RecurrenceInterval, y = PeakDischarge)) +
+  geom_point() +
+  geom_point(data = MysterySite.Annual.Full, color = "#02818a",
+             aes(x = RecurrenceInterval, y = PeakDischarge))
+print(MysterySiteRecurrencePlot)
+
+MysterySite.RImodel.30 <- lm(data = MysterySite.Annual.30yr, PeakDischarge ~ log(RecurrenceInterval))
+
+MysterySite.RImodel.Full <- lm(data = MysterySite.Annual.Full, PeakDischarge ~ log(RecurrenceInterval))
+
+MysterySite.RImodel.30$coefficients[1] + MysterySite.RImodel.30$coefficients[2]*log(100)
+
+MysterySite.RImodel.Full$coefficients[1] + MysterySite.RImodel.Full$coefficients[2]*log(100)
 
 ```
 
