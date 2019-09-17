@@ -65,13 +65,13 @@ MysterySiteDischarge <-
 MysterySiteDischarge.Pattern <- 
   MysterySiteDischarge %>%
   group_by(Day.of.Year) %>%
-  summarise( Q25.Discharge = quantile(Discharge, 0.25), Median.Discharge  = quantile(Discharge, 0.50), Q75.Discharge = quantile(Discharge, 0.75))
+  summarise( Q25th.Discharge = quantile(Discharge, 0.25), Median.Discharge  = quantile(Discharge, 0.50), Q75th.Discharge = quantile(Discharge, 0.75))
 
 MysterySitePatternPlot <- 
   ggplot(MysterySiteDischarge.Pattern, aes(x= Day.of.Year))+
-      geom_line(aes(y = Q25.Discharge), color = "gray")+
+      geom_line(aes(y = Q25th.Discharge), color = "gray")+
       geom_line(aes( y = Median.Discharge), color = "black")+
-      geom_line(aes(y = Q75.Discharge),alpha = 0.5, color = "gray")+
+      geom_line(aes(y = Q75th.Discharge),alpha = 0.5, color = "gray")+
       labs(x = "Day of Year", y = expression("Discharge (ft"^3*"/s)"))
 print(MysterySitePatternPlot)  
 
@@ -79,7 +79,7 @@ print(MysterySitePatternPlot)
 
 8. What seasonal patterns do you see? What does this tell you about precipitation patterns and climate in the watershed?
 
-> 
+> The discharge of river is larger in spring and winter, and decreases in summer and fall.The precipitation may be concentrated in spring and winter. In summer, the weather temperature may be high and the climate may be drought in summer, and evapotranspiration rates are higher, reducing surface run off.
 
 ## Create and analyze recurrence intervals
 
@@ -108,25 +108,30 @@ MysterySite.Annual.Full <-
          ExceedenceProbability = 1/RecurrenceInterval)
 
 MysterySiteRecurrencePlot <- 
-  ggplot(MysterySite.Annual.30yr, aes(x = RecurrenceInterval, y = PeakDischarge)) +
+  ggplot(MysterySite.Annual.30yr, aes(x = RecurrenceInterval, 
+                                      y = PeakDischarge)) +
   geom_point() +
   geom_point(data = MysterySite.Annual.Full, color = "#02818a",
              aes(x = RecurrenceInterval, y = PeakDischarge))
 print(MysterySiteRecurrencePlot)
 
-MysterySite.RImodel.30 <- lm(data = MysterySite.Annual.30yr, PeakDischarge ~ log(RecurrenceInterval))
+MysterySite.RImodel.30 <- lm(data = MysterySite.Annual.30yr, PeakDischarge ~ RecurrenceInterval)
+summary(MysterySite.RImodel.30)
 
-MysterySite.RImodel.Full <- lm(data = MysterySite.Annual.Full, PeakDischarge ~ log(RecurrenceInterval))
+MysterySite.RImodel.Full <- lm(data = MysterySite.Annual.Full, PeakDischarge ~ RecurrenceInterval)
+summary(MysterySite.RImodel.Full)
 
-MysterySite.RImodel.30$coefficients[1] + MysterySite.RImodel.30$coefficients[2]*log(100)
+MysterySite.RImodel.30$coefficients[1] + 
+  MysterySite.RImodel.30$coefficients[2]*100
 
-MysterySite.RImodel.Full$coefficients[1] + MysterySite.RImodel.Full$coefficients[2]*log(100)
+MysterySite.RImodel.Full$coefficients[1] + 
+  MysterySite.RImodel.Full$coefficients[2]*100
 
 ```
 
 12. How did the recurrence interval plots and predictions of a 100-year flood differ among the two data frames? What does this tell you about the stationarity of discharge in this river?
 
-> 
+> In the recurrence interval plot, the slope of first 30 years points is steeper than that of full years points. And the discharge prediction of first 30 years model is much greater than that of full years model. This indicates that this river is non-stationary over time since the prediction of 100-year flood varies greatly in 30-year period and full-year period.
 
 ## Reflection
 13. What are 2-3 conclusions or summary points about river discharge you learned through your analysis?
