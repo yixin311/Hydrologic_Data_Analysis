@@ -65,7 +65,9 @@ MysterySiteDischarge <-
 MysterySiteDischarge.Pattern <- 
   MysterySiteDischarge %>%
   group_by(Day.of.Year) %>%
-  summarise( Q25th.Discharge = quantile(Discharge, 0.25), Median.Discharge  = quantile(Discharge, 0.50), Q75th.Discharge = quantile(Discharge, 0.75))
+  summarise( Q25th.Discharge = quantile(Discharge, 0.25),
+             Median.Discharge  = quantile(Discharge, 0.50),
+             Q75th.Discharge = quantile(Discharge, 0.75))
 
 MysterySitePatternPlot <- 
   ggplot(MysterySiteDischarge.Pattern, aes(x= Day.of.Year))+
@@ -112,7 +114,9 @@ MysterySiteRecurrencePlot <-
                                       y = PeakDischarge)) +
   geom_point() +
   geom_point(data = MysterySite.Annual.Full, color = "#02818a",
-             aes(x = RecurrenceInterval, y = PeakDischarge))
+             aes(x = RecurrenceInterval, y = PeakDischarge))+
+  labs(x = "Recurrence Interval", y = expression ("Peak Discharge(ft"^3*"/s)"))
+
 print(MysterySiteRecurrencePlot)
 
 MysterySite.RImodel.30 <- lm(data = MysterySite.Annual.30yr, PeakDischarge ~ RecurrenceInterval)
@@ -131,21 +135,21 @@ MysterySite.RImodel.Full$coefficients[1] +
 
 12. How did the recurrence interval plots and predictions of a 100-year flood differ among the two data frames? What does this tell you about the stationarity of discharge in this river?
 
-> In the recurrence interval plot, the slope of first 30 years points is steeper than that of full years points. And the discharge prediction of first 30 years model is much greater than that of full years model. This indicates that this river is non-stationary over time since the prediction of 100-year flood varies greatly in 30-year period and full-year period.
+> In the recurrence interval plot, the slope of first 30 years points is steeper than that of full years points. And the discharge prediction of first 30 years model is much greater than that of full years model.The discharge of this river is non-stationary since the 100-year flood predicted values of two models are quite different over different time period.
 
 ## Reflection
 13. What are 2-3 conclusions or summary points about river discharge you learned through your analysis?
 
->
+> 1. Precipitation and climate change will impact seasonal changes of river discharge. 2. Rivers can be non-stationary because of the climate impact, the floods and droughts may occur which are outside the normal range.
 
 14. What data, visualizations, and/or models supported your conclusions from 13?
 
-> 
+> From the MysterySitePatternPlot it can be seen that the river discharge have a very obvious seasonal trend, which may caused by climate and precipitation impact. From 2 time-scale models, the prediction of 100-year flood varies greatly, which indicates the nonstationarity of river. 
 
 15. Did hands-on data analysis impact your learning about discharge relative to a theory-based lesson? If so, how?
 
->
+> Hands-on data analysis can let me explore the theory on my own, and it can help me understand it better from examples. The only problem is it may not cover the whole theory from one or two examples, so it'll be better to summary main theories after hands-on data analysis.
 
 16.	How did the real-world data compare with your expectations from theory?
 
->
+>Sometimes the real-world data may not in accordance with theory. For example, we learn from class that we may underpredict the discharge when using shorter periods of data, however in this example, the prediction of full-year model is less than first 30-year model.
