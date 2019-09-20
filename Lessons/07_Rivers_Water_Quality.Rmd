@@ -19,6 +19,7 @@ What is water quality? What are some of the things it encompasses?
 ## Session Set Up
 
 ```{r, message = FALSE}
+#set working place
 getwd()
 
 packages <- c("dataRetrieval", "tidyverse", "cowplot", "lubridate")
