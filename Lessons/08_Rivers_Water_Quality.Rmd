@@ -16,6 +16,7 @@ editor_options:
 ## Opening Discussion
 What are indicator species? Why are they helpful in thinking about water quality?
 
+today indicates water quality not well.
 
 ## Session Set Up
 
@@ -41,11 +42,11 @@ Bacteria is present in almost every stream on earth. Most bacteria are harmless,
 1) **Total cell counts**. One way to measure the bacteria in water is to count the number of cells under a microscope in a given volumn of water (such as 1 mL). The units for this metric are cells ml^-1^.
 2) **Total coliforms**. Coliform bacteria are for the most part harmless microorganisms that live in animal intestines. Total coliforms are often used as a metric of how much raw or insufficiently treated sewage is making its way into a water body. The way these are measured are by taking a known volume of water, cultivating it in the lab, and counting the number of colonies that grow. Units for this metric are colony forming units (cfu) per 100 ml.
 3) **Fecal coliforms**. Fecal coliforms are coliforms that are specifically associated with warm-blooded animals, and can be grown at higher temperatures than other coliforms. Fecal coliforms are a more precise way of estimating sewage inputs, though they are only an indicator species and not necessarily harmful. The most well known species in this group is Escherichia coli (E. coli). Units are cfu per 100 ml. 
-4) **Fecal streptocci**. Fecal streptocci are a different type of bacteria that are also associated with human and animal digestive tracts. Streptocci are more widespread than coliforms. Units are cfu per 100 ml.
+4) **Fecal streptocci**. Fecal streptocci are a different type of bacteria that are also associated with human and animal digestive tracts. Streptocci are more widespread than coliforms. Units are cfu per 100 ml. 
 
 Why might it be helpful to have multiple ways to measure bacteria?
 
->
+> cross-validate
 
 Where and when do you think the biggest risks from harmful bacteria are?
 
@@ -67,7 +68,7 @@ parameters <- parameterCdFile
 dat.raw <- readNWISqw(siteNumbers = "01096550", #Merrimack River upstream of Lowell 
                      parameterCd = c("95200",  #Total cell count
                                      "31501",  #Total coliforms
-                                     "31625",  #Fecal coliforms (0.7 um filter)
+                                     "31625",  #Fecal coliforms (0.7 um filter, have more coliforms, let more particles pass through)
                                      "31616",  #Fecal coliforms (0.45 um filter)
                                      "31673",  #Fecal streptocci KF streptocaccus
                                      "31679"), #Fecal streptocci m-Enterococcus
@@ -142,19 +143,19 @@ Total.cell.plot <- ggplot(microb.dat, aes(x = Date)) +
 print(Total.cell.plot)
 
 Microbes.plot <- plot_grid(Total.coli.plot +
-                             labs(title = "Total Coliform", y = ""),
+                             labs(title = "Total Coliform", y = "") + theme(plot.title = element_text(size = 10)),
                            F.coli.45.plot + 
-                             labs(title = "Fecal Coliform (.45)", y = "") ,
+                             labs(title = "Fecal Coliform (.45)", y = "") + theme(plot.title = element_text(size = 10)),
                            F.coli.7.plot + 
-                             labs(title = "Fecal Coliform (.7)", y = "") ,
+                             labs(title = "Fecal Coliform (.7)", y = "")+ theme(plot.title = element_text(size = 10)) ,
                            F.strep.strep.plot + 
                              labs(title = "Fecal streptocci (KF streptococcus)",
-                                  y = ""),
+                                  y = "")+ theme(plot.title = element_text(size = 10)),
                            F.strep.ente.plot +
                              labs(title = "Fecal streptocci (m-Enterococcus)",
-                                  y = ""), 
+                                  y = "")+ theme(plot.title = element_text(size = 10)), 
                            Total.cell.plot + 
-                             labs(title = "Total cell count", y = ""),
+                             labs(title = "Total cell count", y = "")+ theme(plot.title = element_text(size = 10)),
                            ncol = 1)
 
 print(Microbes.plot)
@@ -162,11 +163,11 @@ print(Microbes.plot)
 
 How would you use all of this data to talk about changes in microbial water quality from 1970 to 2000? What are the challenges?
 
->
+>highest number in total coliform, middle in 0.7, lowest in 0.45. even though we don't know how much it decreses, the trend is decreasing by comparing the number fo 0.45 and 0.7. demonstrates the water quality improved.
 
 Do you think water quality has improved between 1970 and 2000? Why or why not?
 
->
+>Yes
 
 The city of Lawrence, MA is downstream of Lowell and gets its drinking water from the Merrimack River. Use the federal drinking water standard for Total Coliforms (https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations#Microorganisms) to comment on whether or not this water necessarily needs to be treated for bacteria.
 
@@ -197,15 +198,33 @@ coli.seasons <- ggplot(coli.monthly.summaries, aes(x = month)) +
     labs(y = "Total coliforms (cfu / 100 ml)") 
 
 print(coli.seasons)
+
+F.strep.strep.monthly.summaries <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.strep.strep) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+F.strep.strep.seasons <- ggplot(F.strep.strep.monthly.summaries, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "F.streptocci (cfu / 100 ml)") 
+
+print(F.strep.strep.seasons)
+
 ```
 
 When are total coliform concentrations highest? Why might this be?
 
->
+> Aug. coliforms can live better in warmer seasons
 
 Does this pattern also exist for the other microbial indicators?
 
->
+>No, 
 
 ## Combined Sewer Overflows (CSOs)
 
@@ -215,11 +234,11 @@ The USGS site that we got the water quality data from does not have discharge da
 
 Which site's discharge data would better indicate when the city of Lowell has exprienced a big rain event?
 
->
+> Concord river 400 square miles, local watershed
 
 What would a CSO event look like in the data?
 
->
+> a lot microbes, the discharge should be high
 
 ```{r pull_hydrology}
 
@@ -275,7 +294,8 @@ plot_grid( , , ncol = 1)
 
 Show your plot to your group and discuss why you think it might represent a CSO.
 
->
+>Aug 11, 1976
+> 
 
 ## Closing Discussion
 
