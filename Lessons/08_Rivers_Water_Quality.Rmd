@@ -29,7 +29,7 @@ packages <- c("tidyverse",
               "xts",
               "dygraphs", 
               "lubridate")
-invisible(lapply(packages, library, character.only = TRUE)) 
+invisible(lapply(packages, library, character.only = TRUE)) #？
 
 
 theme_set(theme_classic(base_size = 12))

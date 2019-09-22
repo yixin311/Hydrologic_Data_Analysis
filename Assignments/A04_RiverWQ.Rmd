@@ -51,24 +51,27 @@ dat.row <- readNWISqw(siteNumbers = "02097314",
 
 dat <- dat.row %>%
   select(Date = sample_dt,
-         Value = result_va)%>%
-  group_by(Date)%>%
+         Value = result_va,
+         Parameter = parm_cd)%>%
+  group_by(Date, Parameter)%>%
   summarise(Value = mean(Value))%>%
   spread(key = Parameter, value = Value) %>%
-  rename(oxygen = '00300')
+  rename(oxygen = '00300') 
 
-
-  
-
-  
-
-  
+dat.02 <- dat %>%
+  filter(oxygen <= 2)
   
 ```
 
 5. Create a ggplot of oxygen concentrations over time. Include a horizonal line at 2 mg/l to show the hypoxia cutoff. 
 
 ```{r}
+oxygen.plot <- ggplot(dat, aes(x = Date, y = oxygen)) +
+  geom_line() +
+  geom_hline(yintercept  = 2, color = "gray")+
+  labs(x= "", y= "Oxygen concentration (mg/L)")+
+    ggtitle("Oxygen concentration over time")
+print(oxygen.plot)
 
 ```
 
@@ -82,7 +85,18 @@ dat <- dat.row %>%
 
 
 ```{r read_nutrients}
-
+nutrients.dat.row <- readNWISqw(siteNumbers =  "02097314",
+                                parameterCd = c("00600", "00665"),
+                                startDate = "",
+                                endDate = "")
+nutrients.dat <- nutrients.dat.row %>%
+  select(Date = sample_dt,
+         Value = result_va,
+         Parameter = parm_cd)%>%
+  group_by(Date,Parameter)%>%
+  summarise(Value = mean(Value))%>%
+  spread(key = Parameter, value = Value)%>%
+  rename(TotalNitrogen_mgl_N = "00600", TotalPhosphorus_mgl_P = "00665")
 ```
 
 8. Create two ggplots stacked with cowplot that show nutrient concentrations over time.
