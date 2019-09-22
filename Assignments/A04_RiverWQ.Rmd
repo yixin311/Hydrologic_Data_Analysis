@@ -102,7 +102,25 @@ nutrients.dat <- nutrients.dat.row %>%
 8. Create two ggplots stacked with cowplot that show nutrient concentrations over time.
 
 ```{r nutrient.plots)}
+TotalNitrogen.plot <- ggplot(nutrients.dat, aes(x = Date)) +
+  geom_line(aes(y = TotalNitrogen_mgl_N))+
+  labs(x = "", 
+       y = "Total Nitrogen (mg/L)") 
+  
+TotalPhosphorus.plot <- ggplot(nutrients.dat, aes(x = Date)) +
+  geom_line(aes(y = TotalPhosphorus_mgl_P))+
+  labs(x = "", 
+       y = "Total Phosphorus (mg/L)")
 
+nutrients.plot <- plot_grid(TotalNitrogen.plot+
+                             labs(title = "Total Nitrogen", y = "") + theme(plot.title = element_text(size = 10)),
+                           TotalPhosphorus.plot + 
+                             labs(title = "Total Phosphorus", y = "") + 
+                             theme(plot.title = element_text(size = 10)),
+                           ncol = 1)
+
+print(nutrients.plot)
+  
 ```
 
 9. What do these plots tell you about nutrient concentrations over time? How might this relate to your previous plot of hypoxia events?
@@ -114,12 +132,29 @@ nutrients.dat <- nutrients.dat.row %>%
 10. Turbulent flow in rivers mixes oxygen into the water column. As discharge decreases, water moves slower, and oxygen diffuses slower into the water from the atmosphere. Download and reformat the daily discharge data for New Hope Creek (function `readNWISdv()`, site `02097314`, parameter `00060`). 
 
 ```{r bring_discharge}
+discharge.raw <- readNWISdv(site = "02097314", parameterCd = c("00060"), startDate = "", endDate = "")
+str(discharge.raw, give.attr = FALSE)
 
+discharge.dat <- discharge.raw %>%
+  select(Date = Date, Discharge_cfs = X_00060_00003)
+  
+ggplot(discharge.dat, aes(x = Date, y = Discharge_cfs)) +
+  geom_line() +
+  labs(y = "Discharge (cfs)", x = "Date")
 ```
 
 11. Create a dygraph of discharge and oxygen concentrations. You should have discharge on the y axis and oxygen concentration on the y2 axis. Set your y-axes limits so that they don't change as you zoom in and out. (hint: use `dyAxis(..., valueRange = c(0, 6500))` for discharge & `dyAxis(..., valueRange = c(0, 13))` for oxygen).
 ```{r}
+Oxygen <- with(dat, xts(x = oxygen, order.by = Date))
+Discharge <- with(discharge.dat, xts(x = Discharge_cfs, order.by = Date))
 
+DyDat <- cbind(Oxygen, Discharge)
+
+dygraph(DyDat) %>% 
+  dySeries("Oxygen", axis = "y2") %>% 
+  dyAxis(name = "y", label = "Discharge (cfs)", valueRange = c(0,6500)) %>%
+  dyAxis(name = "y2", label = "Oxygen concentration (mg/L)", valueRange = c(0, 13)) %>%
+  dyRangeSelector()
 ```
 
 12. Do hypoxic events happen in the wet or the dry season? How many days after storm events (of at least 100 cfs) do they occur? 
