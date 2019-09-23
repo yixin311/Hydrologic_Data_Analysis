@@ -58,8 +58,10 @@ dat <- dat.row %>%
   spread(key = Parameter, value = Value) %>%
   rename(oxygen = '00300') 
 
-dat.02 <- dat %>%
-  filter(oxygen <= 2)
+"02.dat" <- dat %>% 
+  filter(oxygen <= 2)%>%
+  rename(oxygen_below2 = 'oxygen')
+  
   
 ```
 
@@ -69,7 +71,7 @@ dat.02 <- dat %>%
 oxygen.plot <- ggplot(dat, aes(x = Date, y = oxygen)) +
   geom_line() +
   geom_hline(yintercept  = 2, color = "gray")+
-  labs(x= "", y= "Oxygen concentration (mg/L)")+
+  labs(x= "Date", y= "Oxygen concentration (mg/L)")+
     ggtitle("Oxygen concentration over time")
 print(oxygen.plot)
 
@@ -77,7 +79,7 @@ print(oxygen.plot)
 
 6. What do you notice about the frequency of hypoxia overtime?
 
-> 
+> The hypoxia happened in 1983 and 1984, during that period of time, the oxygen concentration varied greatly. And after 1990, the oxygen concentration became more stable, the variation range became smaller and hypoxia never happen again.
 
 ## Nutrients
 
@@ -113,9 +115,12 @@ TotalPhosphorus.plot <- ggplot(nutrients.dat, aes(x = Date)) +
        y = "Total Phosphorus (mg/L)")
 
 nutrients.plot <- plot_grid(TotalNitrogen.plot+
-                             labs(title = "Total Nitrogen", y = "") + theme(plot.title = element_text(size = 10)),
+                             labs(title = "Total Nitrogen", 
+                                  y = "Total Nitrogen (mg/L)") +
+                              theme(plot.title = element_text(size = 10)),
                            TotalPhosphorus.plot + 
-                             labs(title = "Total Phosphorus", y = "") + 
+                             labs(title = "Total Phosphorus", x = "Date", 
+                                  y = "Total Phosphorus (mg/L)") + 
                              theme(plot.title = element_text(size = 10)),
                            ncol = 1)
 
@@ -125,7 +130,7 @@ print(nutrients.plot)
 
 9. What do these plots tell you about nutrient concentrations over time? How might this relate to your previous plot of hypoxia events?
 
-> 
+> For both total nitrogen and total phosphorus, they have similar changing trend over time. Before 1985, the concentration of these two nutrinets varied greatly, and there were several peak values happened during that time, which was much higher than the concentration after 1990. Since total nitrogen and total phosphorus can promote biomass growth which increases respiration and results depletion in oxygen concentrations in the water, which is shown in previous oxygen plot. The oxygen concentration was influenced by the concentration of total nitrogen and total phosphorus. When these two nutrients concentration varied greatly, the oxygen concentration varied greatly as well, and when nutrients concentration was high, the hypoxia could happen.
 
 ## Discharge and Temperature
 
@@ -133,12 +138,12 @@ print(nutrients.plot)
 
 ```{r bring_discharge}
 discharge.raw <- readNWISdv(site = "02097314", parameterCd = c("00060"), startDate = "", endDate = "")
-str(discharge.raw, give.attr = FALSE)
 
 discharge.dat <- discharge.raw %>%
   select(Date = Date, Discharge_cfs = X_00060_00003)
   
-ggplot(discharge.dat, aes(x = Date, y = Discharge_cfs)) +
+Discharge.polt <-
+  ggplot(discharge.dat, aes(x = Date, y = Discharge_cfs)) +
   geom_line() +
   labs(y = "Discharge (cfs)", x = "Date")
 ```
@@ -159,29 +164,30 @@ dygraph(DyDat) %>%
 
 12. Do hypoxic events happen in the wet or the dry season? How many days after storm events (of at least 100 cfs) do they occur? 
 
-> 
+> Dry season.Cause in dry season, river discharge decreases and the oxygen concentration will decrease as well since the oxygen supplement from air is not enough, and hypoxic events would happen. 1. The hypoxic event in Aug 8, 1983 happened 72 days after the storm event happened on May 28, 1983.2. the hypoxic event in Sep 7, 1983 happened 102 days after the storm event happened on May 28, 1983; 3. the hypoxic event in Aug 22, 1984 happened 10 days after the storm event happened on Aug 12, 1984. 4. the hypoxic event in Sep 1984, 1984 happened 38 days after the storm event happened on Aug 12, 1984. 5.the hypoxic event in Oct 16, 1984 happened 65 days after the storm event happened on Aug 12, 1984.
 
 13. Temperature also impacts the solubility of oxygen in water. More oxygen can dissolve when temperatures are *lower*. How would you analyze the effects of temperature on dissolved oxygen concentrations? What data would you need? How would you separate the effects of temperature from the effects of flow?
 
-> 
+> I would draw a dygraph of oxygen and temperature over the same period of time to see if there is any relationship between them. I need the temperature data of the New Hope Creek over the same period of oxygen. 
 
 14. What do you think is the biggest driver of hypoxia in New Hope Creek? What data do you use to support your conclusion?
 
-> 
+> I think the biggest driver of hypoxia is total nitrogen and total phosphorus concentration. Because the oxygen.plot and nutrients.plot shows that the change of oxygen concentration has tight relationship with the change of total nitrogen concentration and total phosphorus concentration. When the nutrients concentration varies greatly, the oxygen concentration varies greatly as well, and when the nutrients concentration is high, the correlated oxygen concentration is low and hypoxia happens. While the discharge of flow also has influence on oxygen concentration, but from the dygraph, after 1990, even when the discharge was low, the hypoxia did not happen, which means the impact of  nutrients concentration on hypoxia is stronger that river discharge. 
 
 ## Reflection
 15. What are 2-3 conclusions or summary points about river water quality you learned through your analysis?
 
->
+> 1. Nutrient concentrations have impact on oxygen concentration, when the nutrient concentration is high, it often causes hypoxia because abundant nutrients promote biomass growth, increase respiration and thus oxygen concentration decreases.So it's important to control the growth of biomass such as algae, cause they can consume the oxygen concentration in water which would threaten other creatures's life in water.
+2. River discharge can have impact on oxygen concentration. When the discharge is high, it can help the oxygen in the river surface dissolve into the water column, which can increase the oxygen concentration. Thus, hypoxia would happen in dry season.
 
 16. What data, visualizations, and/or models supported your conclusions from 15?
 
-> 
+>oxygen.plot and nutrients.plot can support the conclustion No.1 in 15, and the dygraph the the DyDat data can support the conclustion No.2 in 15.
 
 17. Did hands-on data analysis impact your learning about water quality relative to a theory-based lesson? If so, how?
 
->
+> Hands-on data analysis can let me explore the theory on my own, and it can help me understand it better from examples. 
 
 18.	How did the real-world data compare with your expectations from theory?
 
->
+>The real-world data can have many influenced factors, when we analyze the impact of these factors, sometimes it's hard to see each factor's influence from the data or graph we've got, cause what the monitoring data shows is the comprehensive effect of all the factors. When we want to analyze the influence of a single data, it is important to separate it from others.
