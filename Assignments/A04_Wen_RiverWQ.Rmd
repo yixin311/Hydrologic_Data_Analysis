@@ -159,6 +159,7 @@ dygraph(DyDat) %>%
   dySeries("Oxygen", axis = "y2") %>% 
   dyAxis(name = "y", label = "Discharge (cfs)", valueRange = c(0,6500)) %>%
   dyAxis(name = "y2", label = "Oxygen concentration (mg/L)", valueRange = c(0, 13)) %>%
+  dyAxis(name = 'x', label = "Date")%>%
   dyRangeSelector()
 ```
 
@@ -168,7 +169,7 @@ dygraph(DyDat) %>%
 
 13. Temperature also impacts the solubility of oxygen in water. More oxygen can dissolve when temperatures are *lower*. How would you analyze the effects of temperature on dissolved oxygen concentrations? What data would you need? How would you separate the effects of temperature from the effects of flow?
 
-> I would draw a dygraph of oxygen and temperature over the same period of time to see if there is any relationship between them. I need the temperature data of the New Hope Creek over the same period of oxygen. 
+> I would draw a dygraph of oxygen and temperature over the same period of time to see if there is any relationship between them. I need the temperature data of the New Hope Creek over the same period as oxygen data. Since the seasonality of flow and temperature are similar, I want to compare data which the flow the is the same, while temperatures are different (i.e. high temperature & high flow with low temperature & high flow.)
 
 14. What do you think is the biggest driver of hypoxia in New Hope Creek? What data do you use to support your conclusion?
 
