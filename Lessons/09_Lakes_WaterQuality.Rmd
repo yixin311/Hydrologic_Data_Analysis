@@ -15,7 +15,7 @@ editor_options:
 
 ## Opening Discussion
 What are the major water quality impairments experienced in lakes?  
-
+DO, nutrients, microbes, odor/color, invasive species, contaminants,
 ## Session Set Up
 
 ```{r}
@@ -23,13 +23,13 @@ getwd()
 
 library(tidyverse)
 library(lubridate)
-#install.packages("LAGOSNE")
+install.packages("LAGOSNE")
 library(LAGOSNE)
 
 theme_set(theme_classic())
-options(scipen = 100)
+options(scipen = 100) # prevent e problem in number, like 3.14+e...
 
-lagosne_get(dest_folder = LAGOSNE:::lagos_path(), overwrite = TRUE)
+lagosne_get(dest_folder = LAGOSNE:::lagos_path(), overwrite = TRUE)# ONLY need to do once
 
 ```
 
@@ -49,7 +49,7 @@ LAGOSdata <- lagosne_load()
 names(LAGOSdata)
 
 # If the package installation and data download has not worked, use this code: 
-# load(file = "./Data/Raw/LAGOSdata.rda")
+load(file = "./Data/Raw/LAGOSdata.rda")
 
 # Exploring the data types that are available
 LAGOSlocus <- LAGOSdata$locus
@@ -70,9 +70,9 @@ For example, let's find out how many lakes are in each state. Note that LAGOSloc
 Add notes about each line of code as we go along. What does each function do?
 ```{r}
 # Join data frames
-LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
+LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid") #"left_join" means join in left, "by" means common column
 
-# Order by number of lakes
+# Order by number of lakes, keep all the rows, all the columns minus 1 means the common column
 LAGOSlocations <- 
   within(LAGOSlocations, 
          state <- factor(state, levels = names(sort(table(state), decreasing=TRUE))))
@@ -87,6 +87,8 @@ print(LakeCounts)
 Robert Carlson's 1977 paper, "A trophic state index for lakes," established the first numeric categorization system for a lake's **trophic state**, the amount of biomass a given system can sustain. Trophic state is a useful water quality metric, as it can give insight into the propensity of a system to develop algal blooms, the degree of nutrient loading in the system, and a range of other potential water quality concerns experienced by other lakes with a similar trophic state (e.g., hypoxia).
 
 To calculate the **Trophic State Index**, three variables can be used. Note these should not be used to define trophic state but as indicators of the broader condition. Comparing these values in a given lake can give insight into the broader mechanisms at play.
+
+trophic state: the amount of biomass, represented in another way
 
 * *chlorophyll a concentration*, a proxy for algal (phytoplankton) biomass. Pros: direct measure of primary productivity
 * *Secchi disk transparency*, a measure of water clarity. Pros: simple and cheap. Cons: may yield a high TSI in highly colored lakes and in lakes where particulate matter is comprised of non-algal material 
@@ -115,8 +117,8 @@ LAGOStrophic <-
          gnis_name, lake_area_ha, state, state_name) %>%
   mutate(sampleyear = year(sampledate), 
          samplemonth = month(sampledate), 
-         season = as.factor(quarter(sampledate, fiscal_start = 12))) %>%
-  drop_na(chla:secchi)
+         season = as.factor(quarter(sampledate, fiscal_start = 12))) %>% # lubradate "quarter " can separate year in to 4, fiscal_start starts from the month
+  drop_na(chla:secchi) # drop any row which has NA in chal:secchi columns
 
 levels(LAGOStrophic$season) <- c("Winter", "Spring", "Summer", "Fall")
 ```
@@ -150,20 +152,25 @@ print(tpbymonth)
 
 What do you notice about the seasonality of these variables? If we were to characterize a lake based on the value of a given variable, how might seasonality affect our interpretations?
 
->
+>1. highest chl in summer since there is more light,and higher temperature in summer, people are intended to study more in summer than in winter cause there are more data in summer, we used to do more winter sampling than now
+2. in winter we almost only have older data while in summer we have more recent data. more concentrated in lower secchi depth than higher secchi depth. secchi depth is opposite to chl in general.
+3. mainly phosphate, higher concentration in summer, more data in summer. But do have high phosphorus in winter, the relationship with chl breaks down a little
 
 ### Calculating trophic state index
 Let's add a TSI value calculated from each of the three variables to the data frame. Let's also add a column that designates the lake as oligotrophic, mesotrophic, eutrophic, or hypereutrophic based on the TSI.chl value. Make notes about the code as we go along.
+
 ```{r}
+# calculate TSI
 LAGOStrophic <- 
   mutate(LAGOStrophic, 
-         TSI.chl = round(10*(6 - (2.04 - 0.68*log(chla)/log(2)))),
+         TSI.chl = round(10*(6 - (2.04 - 0.68*log(chla)/log(2)))), # log is just a natural log "e", you need to give a base 10 if you want log 10
          TSI.secchi = round(10*(6 - (log(secchi)/log(2)))), 
          TSI.tp = round(10*(6 - (log(48/tp)/log(2)))), 
          trophic.class = 
             ifelse(TSI.chl < 40, "Oligotrophic", 
                    ifelse(TSI.chl < 50, "Mesotrophic",
-                          ifelse(TSI.chl < 70, "Eutrophic", "Hypereutrophic"))))
+                          ifelse(TSI.chl < 70, "Eutrophic", "Hypereutrophic")))) # for last 2, if < 70, eutrophci, if > = 70, the hypereutrophic
+# different indexes can give different results. choose chl because it is the most direct one.
 
 LAGOStrophic$trophic.class <- 
   factor(LAGOStrophic$trophic.class,
