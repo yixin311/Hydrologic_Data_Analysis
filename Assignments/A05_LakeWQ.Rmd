@@ -46,7 +46,7 @@ LAGOStrophic <-read_csv("./Data/LAGOStrophic.csv")
 
 ```{r}
 LAGOStrophic <-
-  mutate
+  mutate()
   
 ```
 
