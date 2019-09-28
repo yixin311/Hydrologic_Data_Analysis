@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Water Quality in Lakes"
-author: "Student Name"
+author: "Yixin Wen"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -28,7 +28,16 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 4. Load the LAGOSdata database and the trophic state index csv file we created on 2019/09/27.
 
 ```{r setup}
+getwd()
 
+library(tidyverse)
+library(lubridate)
+library(LAGOSNE)
+
+theme_set(theme_classic())
+load(file = "./Data/Raw/LAGOSdata.rda")
+#load(file = "./Data/LAGOStrophic.csv") this cannot work, why?
+LAGOStrophic <-read_csv("./Data/LAGOStrophic.csv")
 ```
 
 ## Trophic State Index
@@ -36,7 +45,9 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 5. Similar to the trophic.class column we created in class (determined from TSI.chl values), create two additional columns in the data frame that determine trophic class from TSI.secchi and TSI.tp (call these trophic.class.secchi and trophic.class.tp). 
 
 ```{r}
-
+LAGOStrophic <-
+  mutate
+  
 ```
 
 
