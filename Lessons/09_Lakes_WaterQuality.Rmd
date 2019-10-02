@@ -29,7 +29,8 @@ library(LAGOSNE)
 theme_set(theme_classic())
 options(scipen = 100) # prevent e problem in number, like 3.14+e...
 
-lagosne_get(dest_folder = LAGOSNE:::lagos_path(), overwrite = TRUE)# ONLY need to do once
+# ONLY need to do once
+lagosne_get(dest_folder = LAGOSNE:::lagos_path(), overwrite = TRUE)
 
 ```
 
@@ -72,7 +73,7 @@ Add notes about each line of code as we go along. What does each function do?
 # Join data frames
 LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid") #"left_join" means join in left, "by" means common column
 
-# Order by number of lakes, keep all the rows, all the columns minus 1 means the common column
+# Descending of lake numbers of state
 LAGOSlocations <- 
   within(LAGOSlocations, 
          state <- factor(state, levels = names(sort(table(state), decreasing=TRUE))))
@@ -180,7 +181,7 @@ LAGOStrophic$trophic.class <-
 #   factor(LAGOStrophic$season,
 #          levels = c("Spring", "Summer", "Fall", "Winter"))
 
-#scales::show_col(colormap(colormap = colormaps$magma, nshades=16))
+#scales::show_col(colormap(colormap = colormaps$magma, nshades=16)) a color package gives different color palettes.
 ```
 
 Now let's compare TSI values calculated from chl, secchi depth, and TP. If these were all perfectly equivalent metrics, all points should line up on the 1:1 line. 
@@ -193,18 +194,20 @@ chlvssecchi <- ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.secchi)) +
   scale_x_continuous(limits = c(0, 100)) +
   geom_abline(slope = 1, intercept = 0) 
 print(chlvssecchi)
-  
+# when chl equals to secchi, the data falls into black line. more data below the line, more bias on chl.
+
 chlvstp <- ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.tp)) +
   geom_point(alpha = 0.1, color = "#ec6163ff") + 
   scale_y_continuous(limits = c(0, 100)) +
   scale_x_continuous(limits = c(0, 100)) +
   geom_abline(slope = 1, intercept = 0)  
 print(chlvstp)
+# few bsnds below line, chl concentration is much higher the tp concentration, 
 ```
 
 What is the observed relationship, and how does it depart from the 1:1 relationship? What do values above or below the 1:1 line tell us about the conditions present in a lake?
 
-> 
+> when chl equals to secchi, the data falls into black line. more data below the line, more bias on chl.few bsnds below line, chl concentration is much higher the tp concentration
 
 ### Comparing TSI across states
 Here are three different ways to envision TSI across the states in the LAGOS-NE database. 
@@ -221,7 +224,7 @@ stateTSIbar <- ggplot(LAGOStrophic, aes(x = state, fill = trophic.class)) +
 print(stateTSIbar)
   
 stateTSIjitter <- ggplot(LAGOStrophic, aes(x = state, y = TSI.chl, color = season)) +
-  geom_rect(xmin = -1, xmax = 19, ymin = 0, ymax = 40,
+  geom_rect(xmin = -1, xmax = 19, ymin = 0, ymax = 40, # gem_rect: as wide as the whole plot
             fill = "gray90", color = "gray90") +
   geom_rect(xmin = -1, xmax = 19, ymin = 40, ymax = 50,
             fill = "gray80", color = "gray80") +
@@ -241,8 +244,8 @@ print(stateTSIjitter)
 
 ```
 What insights do we gain from the different visualizations?
-
-> Violin: 
+> IN only monitor in summer,
+> Violin: the total range, wide part means the concentrated part, distribution,median values
 
 > Bar: 
 
@@ -250,3 +253,10 @@ What insights do we gain from the different visualizations?
 
 ## Closing Discussion
 What factors might you expect to influence TSI scores in a given area? What are some variables in the LAGOSNE database that could help you test your hypothesis?
+> high value may does not mean "bad", but if the trend is different from the previous one, that may be "bad"
+
+```{r}
+# command + option +i to draw a new chunk
+write.csv(LAGOStrophic, "./Data/LAGOStrophic.csv", row.names = FALSE)
+```
+

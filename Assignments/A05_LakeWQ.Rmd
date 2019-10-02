@@ -46,7 +46,15 @@ LAGOStrophic <-read_csv("./Data/LAGOStrophic.csv")
 
 ```{r}
 LAGOStrophic <-
-  mutate()
+  mutate(LAGOStrophic,
+         trophic.class.secchi =
+           ifelse(TSI.secchi < 40, "Oligotrophic", 
+                   ifelse(TSI.secchi < 50, "Mesotrophic",
+                          ifelse(TSI.secchi < 70, "Eutrophic", "Hypereutrophic"))),
+         trophic.class.tp = 
+           ifelse(TSI.tp < 40, "Oligotrophic",
+                  ifelse(TSI.tp < 50, "Mesotrophic",
+                         ifelse(TSI.tp < 70, "Eutrophic", "Hypereutrophic")))) 
   
 ```
 
@@ -54,18 +62,38 @@ LAGOStrophic <-
 6. How many observations fall into the four trophic state categories for the three metrics (trophic.class, trophic.class.secchi, trophic.class.tp)? Hint: `count` function.
 
 ```{r}
+trophic.class <-
+  LAGOStrophic %>%
+    count(trophic.class)
+unique(trophic.class)
 
+trophic.class.secchi <-
+  LAGOStrophic %>%
+    count(trophic.class.secchi)
+unique(trophic.class.secchi)
+
+trophic.class.tp <-
+  LAGOStrophic %>%
+    count(trophic.class.tp)
+unique(trophic.class.tp)
 ```
 
-7. Find and quantify instances where trophic.class and trophic.class.secchi differ. Do the same comparing trophic.class and trophic.class.tp. 
+> for trophic.class, there are 41861 in Eutrophic, 14379 in Hpereutrophic, 15413 in Mesotrophic and 3298 in Oligotrophic; for trophic.class.secchi, there are 28659 in Eutrophic, 5099 in Hpereutrophic, 25083 in Mesotrophic and 16110 in Oligotrophic; for trophic.class.tp, there are 24839 in Eutrophic, 7228 in Hpereutrophic, 23023 in Mesotrophic and 19861 in Oligotrophic.
+
+7. What proportion of total observations are considered eutrohic or hypereutrophic according to the three different metrics (trophic.class, trophic.class.secchi, trophic.class.tp)?
 
 ```{r}
-
+trophic.class.pro = (trophic.class$n[1]+trophic.class$n[2])/74951
+trophic.class.secchi.pro = (trophic.class.secchi$n[1]+trophic.class.secchi$n[2])/74951
+trophic.class.tp.pro = (trophic.class.tp$n[1]+trophic.class.tp$n[2])/74951
 ```
 
-What proportion of observations do these metrics differ?
+> In trophic.class, the proportion is 0.75; in trophic.class.secchi, the proportion is 0.45;
+in trophic.class.tp, the proportion is 0.43.
 
-> 
+Which of these metrics is most conservative in its designation of eutrophic conditions? Why might this be?
+
+> trophic.class.tp is the most conservative metrics in eutrophic conditions.
 
 Note: To take this further, a researcher might determine which trophic classes are susceptible to being differently categorized by the different metrics and whether certain metrics are prone to categorizing trophic class as more or less eutrophic. This would entail more complex code.
 
@@ -74,30 +102,98 @@ Note: To take this further, a researcher might determine which trophic classes a
 8. Create a data frame that includes the columns lagoslakeid, sampledate, tn, tp, state, and state_name. Mutate this data frame to include sampleyear and samplemonth columns as well. Call this data frame LAGOSNandP. 
 
 ```{r}
+LAGOSlocus <- LAGOSdata$locus
+LAGOSstate <- LAGOSdata$state
+LAGOSnutrient <- LAGOSdata$epi_nutr
 
+LAGOSlocus$lagoslakeid <- as.factor(LAGOSlocus$lagoslakeid)
+LAGOSnutrient$lagoslakeid <- as.factor(LAGOSnutrient$lagoslakeid)
+
+LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
+
+LAGOSNandP <- 
+  left_join(LAGOSnutrient, LAGOSlocations, by = "lagoslakeid") %>%
+  select(lagoslakeid, sampledate, tn, tp, 
+         state, state_name) %>%
+  mutate(sampleyear = year(sampledate), 
+         samplemonth = month(sampledate))
 ```
 
 9. Create two violin plots comparing TN and TP concentrations across states. Include a 50th percentile line inside the violins.
 ```{r}
+stateTNviolin <- ggplot(LAGOSNandP, aes(x = state, y = tn)) +
+  geom_violin(draw_quantiles = 0.50)+
+  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)))
+print(stateTNviolin)
 
+stateTPviolin <- ggplot(LAGOSNandP, aes(x = state, y = tp)) +
+  geom_violin(draw_quantiles = 0.50)+
+  labs(x = "State", y = expression(Total_P ~ a ~ (mu*g / L)))
+print(stateTPviolin)
+```
+
+```{r}
+Nstate <-
+  LAGOSNandP %>%
+  select(state,tn)%>%
+  group_by(state)%>%
+  summarise(tn0.5 = quantile(tn, probs = 0.5, na.rm = TRUE))%>%
+  mutate(tn0.5)
+
+Pstate <-
+  LAGOSNandP %>%
+  select(state,tp)%>%
+  group_by(state)%>%
+  summarise(tp0.5 = quantile(tp, probs = 0.5, na.rm = TRUE))%>%
+  mutate(tp0.5)
 ```
 
 Which states have the highest and lowest median concentrations?
 
-> TN:
+> TN: IA has the highest median concentrations, VT and NH have the lowest median concentrations.
 
-> TP:
+> TP: IL has the highest median concentrations, MI,NH and ME have the lowest
+median concentrations.
 
 Which states have the highest and lowest concentration ranges?
 
-> TN: 
+> TN: IA has highest concentration ranges, VT and NH have the lowest concentration ranges.
 
-> TP: 
+> TP: IL has highest concentration ranges, CT and PA have the lowest concentration ranges. 
 
 10. Create two jitter plots comparing TN and TP concentrations across states, with samplemonth as the color. Choose a color palette other than the ggplot default.
 
 ```{r}
+stateTNjitterbymonth <-  
+ggplot(LAGOSNandP, 
+       aes(x = state, y = tn, color = samplemonth)) +
+  geom_jitter(alpha = 0.2) +
+  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Month") +
+  scale_color_viridis_c(option = "inferno")
+print(stateTNjitterbymonth)
 
+stateTPjitterbymonth <-  
+ggplot(LAGOSNandP, 
+       aes(x = state, y = tp, color = samplemonth)) +
+  geom_jitter(alpha = 0.2) +
+  labs(x = "State", y = expression(Total_P ~ a ~ (mu*g / L)), color = "Month") +
+  scale_color_viridis_c(option = "inferno")
+print(stateTPjitterbymonth)
+
+```
+
+```{r}
+Nmonth <-
+  LAGOSNandP%>%
+  select(state,tn)
+Nmonth <- na.omit(Nmonth)
+
+NCounts <- ggplot(Nmonth, aes(x = state)) + 
+  geom_bar(stat = "count") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(NCounts)
+
+  
 ```
 
 Which states have the most samples? How might this have impacted total ranges from #9?
@@ -115,6 +211,21 @@ Which months are sampled most extensively? Does this differ among states?
 11. Create two jitter plots comparing TN and TP concentrations across states, with sampleyear as the color. Choose a color palette other than the ggplot default.
 
 ```{r}
+stateTNjitterbyyear <-  
+ggplot(LAGOSNandP, 
+       aes(x = state, y = tn, color = sampleyear)) +
+  geom_jitter(alpha = 0.2) +
+  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Year") +
+  scale_color_viridis_c(option = "inferno")
+print(stateTNjitterbyyear)
+
+stateTPjitterbyyear <-  
+ggplot(LAGOSNandP, 
+       aes(x = state, y = tp, color = sampleyear)) +
+  geom_jitter(alpha = 0.2) +
+  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Year") +
+  scale_color_viridis_c(option = "inferno")
+print(stateTPjitterbyyear)
 
 ```
 

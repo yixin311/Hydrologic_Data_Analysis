@@ -46,20 +46,33 @@ names(LAGOSdata)
 
 In your group, look through the LAGOS-NE database and decide on 5 variables available in the database that may predict N and P concentrations in lakes. Remembering that hypotheses differ from predictions in that they propose a mechanism, make hypotheses about your choices in predictor variables and how they might affect N and P concentrations.
 
-> Variable 1: 
+> Variable 1: secchi
 
-> Variable 2: 
+> Variable 2: chla
 
-> Variable 3: 
+> Variable 3: toc 
 
-> Variable 4
+> Variable 4 pasture row crops under bufferroom.lulc
 
-> Variable 5: 
+> Variable 5: date, season
 
 Wrangle LAGOSdata so that you have a new data frame that includes TN, TP, your five variables, and any other columns that would be useful for you (e.g., lake id numbers). Helpful functions may include `join`, `select`, `filter`, and `mutate`. Consider whether you want to use `drop_na` to retain complete cases of individual variables or entire rows.
 
 ```{r}
 # Wrangle data here.
+#LAGOS_secchi <- LAGOSdata$epi_nutr$secchi
+#LAGOS_chla <-LAGOSdata$epi_nutr$chla
+LAGOS_nutri <- LAGOSdata$epi_nutr
+LAGOS_state <- LAGOSdata$state
+LAGOS_buffer <- LAGOSdata$buffer500m.lulc
+
+LAGOS_new <-
+  left_join(LAGOS_nutri, LAGOS_buffer, LAGOS_state, by = "lagoslakeid")%>%
+  select(lagoslakeid, sampledate, chla, secchi, 
+          toc, buffer500m.lulc) %>%
+  mutate(sampleyear = year(sampledate), 
+         samplemonth = month(sampledate), 
+         season = as.factor(quarter(sampledate, fiscal_start = 12)))
 
 ```
 
