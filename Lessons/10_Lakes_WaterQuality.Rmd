@@ -67,16 +67,23 @@ LAGOS_state <- LAGOSdata$state
 LAGOSlocus <- LAGOSdata$locus
 LAGOS_buffer <- LAGOSdata$buffer500m.lulc
 
+
+
 LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
 
 LAGOS_new <-
-  left_join(LAGOS_nutri, LAGOSlocations, by = "lagoslakeid")%>%
-  select(lagoslakeid, sampledate, tn, tp, 
-          toc, secchi, chla) %>%
+  left_join(LAGOS_nutri, LAGOSlocations,by = "lagoslakeid")%>%
+  select(lagoslakeid,sampledate, tn, tp,state,state_name,toc, secchi, chla) %>%
   mutate(sampleyear = year(sampledate), 
          samplemonth = month(sampledate), 
          season = as.factor(quarter(sampledate, fiscal_start = 12)))
 
+LAGOS_pasture <-
+  left_join(LAGOS_new, LAGOS_buffer, by = "lagoslakeid")%>%
+  select(lagoslakeid, tn, tp,toc, secchi, chla, buffer500m_nlcd1992_pct_81, buffer500m_nlcd1992_pct_82)
+  
+  
+  
 ```
 
 Examine potential correlations among your predictor variables. If your predictor variables are highly correlated with each other, your model will suffer from *multicollinearity,* essentially that two or more of your predictor variables provide redundant information. Model fit and accuracy of model coefficients suffer when multicollinearity is present. 
