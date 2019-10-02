@@ -36,7 +36,7 @@ options(scipen = 100)
 # Load LAGOSNE data into R session
 LAGOSdata <- lagosne_load()
 # If the lagosne_get function has not worked, use this code: 
-# load(file = "./Data/Raw/LAGOSdata.rda")
+load(file = "./Data/Raw/LAGOSdata.rda")
 
 # What types of data are available in the database?
 names(LAGOSdata)
@@ -64,12 +64,15 @@ Wrangle LAGOSdata so that you have a new data frame that includes TN, TP, your f
 #LAGOS_chla <-LAGOSdata$epi_nutr$chla
 LAGOS_nutri <- LAGOSdata$epi_nutr
 LAGOS_state <- LAGOSdata$state
+LAGOSlocus <- LAGOSdata$locus
 LAGOS_buffer <- LAGOSdata$buffer500m.lulc
 
+LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
+
 LAGOS_new <-
-  left_join(LAGOS_nutri, LAGOS_buffer, LAGOS_state, by = "lagoslakeid")%>%
-  select(lagoslakeid, sampledate, chla, secchi, 
-          toc, buffer500m.lulc) %>%
+  left_join(LAGOS_nutri, LAGOSlocations, by = "lagoslakeid")%>%
+  select(lagoslakeid, sampledate, tn, tp, 
+          toc, secchi, chla) %>%
   mutate(sampleyear = year(sampledate), 
          samplemonth = month(sampledate), 
          season = as.factor(quarter(sampledate, fiscal_start = 12)))
