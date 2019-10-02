@@ -35,9 +35,8 @@ library(lubridate)
 library(LAGOSNE)
 
 theme_set(theme_classic())
-load(file = "./Data/Raw/LAGOSdata.rda")
-#load(file = "./Data/LAGOStrophic.csv") this cannot work, why?
-LAGOStrophic <-read_csv("./Data/LAGOStrophic.csv")
+load(file = "/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/LAGOSdata.rda")
+LAGOStrophic <-read_csv("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/LAGOStrophic.csv")
 ```
 
 ## Trophic State Index
@@ -93,7 +92,7 @@ in trophic.class.tp, the proportion is 0.43.
 
 Which of these metrics is most conservative in its designation of eutrophic conditions? Why might this be?
 
-> trophic.class.tp is the most conservative metrics in eutrophic conditions.
+> trophic.class.tp is the most conservative metrics in eutrophic conditions. Since the limitation of phosphorus for phytoplankton growth only appears in summer.Thus, the data would be more conservative than the other two.  
 
 Note: To take this further, a researcher might determine which trophic classes are susceptible to being differently categorized by the different metrics and whether certain metrics are prone to categorizing trophic class as more or less eutrophic. This would entail more complex code.
 
@@ -168,7 +167,7 @@ stateTNjitterbymonth <-
 ggplot(LAGOSNandP, 
        aes(x = state, y = tn, color = samplemonth)) +
   geom_jitter(alpha = 0.2) +
-  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Month") +
+  labs(x = "State", y = expression(Total_N ~ (mu*g / L)), color = "Month") +
   scale_color_viridis_c(option = "inferno")
 print(stateTNjitterbymonth)
 
@@ -176,13 +175,14 @@ stateTPjitterbymonth <-
 ggplot(LAGOSNandP, 
        aes(x = state, y = tp, color = samplemonth)) +
   geom_jitter(alpha = 0.2) +
-  labs(x = "State", y = expression(Total_P ~ a ~ (mu*g / L)), color = "Month") +
+  labs(x = "State", y = expression(Total_P ~ (mu*g / L)), color = "Month") +
   scale_color_viridis_c(option = "inferno")
 print(stateTPjitterbymonth)
 
 ```
 
 ```{r}
+# count the sample data
 Nmonth <-
   LAGOSNandP%>%
   select(state,tn)
@@ -190,23 +190,33 @@ Nmonth <- na.omit(Nmonth)
 
 NCounts <- ggplot(Nmonth, aes(x = state)) + 
   geom_bar(stat = "count") +
+  labs(x = "State", y = "Nsample_counts")+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 print(NCounts)
 
-  
+Pmonth <-
+  LAGOSNandP%>%
+  select(state,tp)
+Pmonth <- na.omit(Pmonth)
+
+PCounts <- ggplot(Pmonth, aes(x = state)) + 
+  geom_bar(stat = "count") +
+  labs(x = "State", y = "Psample_counts")
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(PCounts)
 ```
 
 Which states have the most samples? How might this have impacted total ranges from #9?
 
-> TN:
+> TN:MO has the most samples. The range of MO is much smaller than IA. When the data sample is large enough, it can give a more accurate result of concentration range. If the data sample is not enough, it has greater opportunity ot have error point, which cannot show the real range of N concentration.
 
-> TP: 
+> TP:WI has the most samples. WI still has a wide range of TP concentration. It may because that more data samples can includes different levels of data.
 
 Which months are sampled most extensively? Does this differ among states?
 
-> TN:
+> TN:IA,OH,MO are sampled extensively in June or July. MA, ME, MN, NY,RI are sampled extensively in September or Octorber.
 
-> TP: 
+> TP: MI is sampled extensively in March or April; Other states are sampled extensively in July or August.
 
 11. Create two jitter plots comparing TN and TP concentrations across states, with sampleyear as the color. Choose a color palette other than the ggplot default.
 
@@ -215,7 +225,7 @@ stateTNjitterbyyear <-
 ggplot(LAGOSNandP, 
        aes(x = state, y = tn, color = sampleyear)) +
   geom_jitter(alpha = 0.2) +
-  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Year") +
+  labs(x = "State", y = expression(Total_N ~ (mu*g / L)), color = "Year") +
   scale_color_viridis_c(option = "inferno")
 print(stateTNjitterbyyear)
 
@@ -223,7 +233,7 @@ stateTPjitterbyyear <-
 ggplot(LAGOSNandP, 
        aes(x = state, y = tp, color = sampleyear)) +
   geom_jitter(alpha = 0.2) +
-  labs(x = "State", y = expression(Total_N ~ a ~ (mu*g / L)), color = "Year") +
+  labs(x = "State", y = expression(Total_P ~ (mu*g / L)), color = "Year") +
   scale_color_viridis_c(option = "inferno")
 print(stateTPjitterbyyear)
 
@@ -232,23 +242,24 @@ print(stateTPjitterbyyear)
 
 Which years are sampled most extensively? Does this differ among states?
 
-> TN:
+> TN:All of the states are sampled most extensively in recent years, after 2010.
 
-> TP: 
+> TP: MN and ME is sampled most extensively in around 1975, other states are sampled most extensively in recent years.
 
 ## Reflection
 12. What are 2-3 conclusions or summary points about lake water quality you learned through your analysis?
 
->
+>1. Using different metrix to evaluate TSI can give different results. 
+2. Jitter plot can avoid overlapping each other, which can show the data distribution in cluster.
 
 13. What data, visualizations, and/or models supported your conclusions from 12?
 
-> 
+> 1.the proportion of trophic.class, trophic.class.secchi and trophic.class.tp. 2. Jitter plot 
 
 14. Did hands-on data analysis impact your learning about water quality relative to a theory-based lesson? If so, how?
 
->
+>Hands-on data analysis can let me explore the theory on my own, and it can help me understand it better from examples. The only problem is it may not cover the whole theory from one or two examples, so it'll be better to summary main theories after hands-on data analysis.
 
 15.	How did the real-world data compare with your expectations from theory?
 
->
+> the real-world data is related to a lot of things. For example, we get Total-N data mostly from recent years, that may have some trouble in studying changing trend of N concentration over periods. 
