@@ -17,7 +17,11 @@ editor_options:
 
 High frequency data is usually defined as frequencies significantly lower than daily (e.g. 5-minute, 15-minute, 1 hr etc). What types of hydrological and biological processes happen on this timescale that we might want to investigate?
 
+<<<<<<< HEAD
 > temp/oxygen -->big daily; fast storms/flash floods; contaminants
+=======
+>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 
 ## Session Set Up
@@ -25,8 +29,11 @@ High frequency data is usually defined as frequencies significantly lower than d
 ```{r, message = FALSE}
 getwd()
 
+<<<<<<< HEAD
 install.packages("EcoHydRology")
 
+=======
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 packages <- c(
   "dataRetrieval", "tidyverse", "cowplot", "EcoHydRology", "xts", "dygraphs"
   )
@@ -45,7 +52,11 @@ dischargedatTFC2018 <- readNWISuv(
   startDate = "2018-01-01", 
   endDate = "2019-01-01"
   ) %>% 
+<<<<<<< HEAD
   renameNWISColumns() # since the datetime has hours, notice there is a time zone code, which is ts_cd; UTC time corrodinates
+=======
+  renameNWISColumns()
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 
 dischargedatEC2018 <- readNWISuv(
@@ -74,8 +85,12 @@ plot_grid(
 
 The shape and size of river hydrographs following rain events can tell us how water moves through a watershed. Once rain falls, how does water get to a stream? What would the streamflow do?
 
+<<<<<<< HEAD
 > overland flow; groundwater; fall in the river channel; pipes; normal
 > in Ellerbe Creek, the base flow is in the just a little higher above the base line; quickflow
+=======
+>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 
 _"Hydrograph separation is one of the most desperate analysis techniques in use in hydrology" - Hewlett & Hibbert 1967_
@@ -92,7 +107,11 @@ TFC2018 <- cbind(dischargedatTFC2018, TFCbaseflow)
 
 ggplot(TFC2018, aes(x = dateTime, y = Flow_Inst)) + 
   geom_line() +
+<<<<<<< HEAD
    #scale_y_log10() +
+=======
+  # scale_y_log10() +
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
   geom_line(mapping = aes(x = dateTime, y = bt), color = "darkorange4") +
   geom_line(mapping = aes(x = dateTime, y = qft), color = "steelblue4")
 
@@ -112,13 +131,17 @@ Export <- TFC2018 %>%
   summarize(BaseflowExport_cf = sum(baseflowexport, na.rm = T),
             QuickflowExport_cf = sum(quickflowexport, na.rm = T),
             TotalExport_cf = BaseflowExport_cf + QuickflowExport_cf)
+<<<<<<< HEAD
 
 baseflow_percen = 
+=======
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
   
 ```
 
 What percentage of water is exported from this watershed as baseflow? What percentage as quickflow?
 
+<<<<<<< HEAD
 > quickflow arrives the peak earlier, thus the early part of the flow would be quickflow; base flow has to go through the soil porcess, it would pass through later. When a storm happens, the quick flow is the first contribution, and serveral hours passed, base flow becomes the new contribution. we have more overland flow, which has impermeable soil surface, which means we have more quickflow than baseflow.
 
 > For TFC: 51.9% baseflow and 48.1% quickflow; for ECL 43.3% baseflow and 56.6% quickflow.
@@ -160,6 +183,13 @@ Export <- EC2018 %>%
 
 
 ```
+=======
+> 
+
+Repeat this analysis for Ellerbe Creek. How do the percentages compare?
+
+>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 What does this mean physically about the watershed?
 
@@ -167,6 +197,7 @@ What does this mean physically about the watershed?
 
 ## Hydrologic Flashiness
 
+<<<<<<< HEAD
 A "flashy" stream increases in flow faster following a precipitation event. a fast, dramatic change. quickflow 
 
 Refering to our previous work with baseflow separation, would you expect flashiness to increase or decrease with urbanization?
@@ -179,6 +210,19 @@ What do you think "urban stream syndrom" refers to?
 
 The Richards-Baker Index is an index of how flashy a stream is. It is calculated as $$RBI = (\sum_{j = 1}^n |Q_j - Q_{j-1}| / \sum_{j = 1}^n Q_j) / Catchment Area$$  j is time step 1,
 small catchment area can generate more flassiniess.
+=======
+A "flashy" stream increases in flow faster following a precipitation event. 
+
+Refering to our previous work with baseflow separation, would you expect flashiness to increase or decrease with urbanization?
+
+> 
+
+What do you think "urban stream syndrom" refers to?
+
+>
+
+The Richards-Baker Index is an index of how flashy a stream is. It is calculated as $$RBI = (\sum_{j = 1}^n |Q_j - Q_{j-1}| / \sum_{j = 1}^n Q_j) / Catchment Area$$
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 ```{r Flashiness}
 TFCsitedata <- readNWISsite(site = "02097280")
@@ -201,6 +245,7 @@ RBI_EC2018 <- (
 
 Which stream is flashier?
 
+<<<<<<< HEAD
 >EC is flashier, RBI_EC >RBI_TFC
 
 ```{r}
@@ -213,6 +258,9 @@ dischargedatHR2018 <- readNWISuv(
   renameNWISColumns()
 ```
 
+=======
+>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 ## Chemical Flashiness
 

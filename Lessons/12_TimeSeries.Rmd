@@ -32,8 +32,11 @@ library(tseries)
 theme_set(theme_classic())
 
 LAGOSdata <- lagosne_load()
+<<<<<<< HEAD
 load(file = "./Data/Raw/LAGOSdata.rda")
 names(LAGOSdata)
+=======
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 ```
 
 ## Trend analysis
@@ -57,18 +60,30 @@ In general, detecting a monotonic trend requires a long sequence of data with fe
 
 Adjusting the data may be necessary to fulfill the assumptions of a trend test. These adjustments include **aggregation**, **subsampling**, and **interpolation**. What do each of these mean, and why might we want to use them?
 
+<<<<<<< HEAD
 > aggregation: eg: weekly data to monthly data or yearly data. reducing demensions in data sets
 
 > subsampling: cutting data into different periods; by weekly data, random day, when smoothing the data, mistaking the frequency, thus use subsampling rather than aggregation.
 
 > interpolation: interpolate weekly data
+=======
+> aggregation: 
+
+> subsampling: 
+
+> interpolation: 
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 Specific tests for monotonic trend analysis are listed below, with assumptions and tips: 
 
 * **linear regression**: no seasonality, fits the assumptions of a parametric test. Function: `lm`
 * **Mann-Kendall**: no seasonality, non-parametric, no temporal autocorrelation, missing data allowed. Function: `mk.test` (package: trend)
 * **modified Mann-Kendall**: no seasonality, non-parametric, accounts for temporal autocorrelation, missing data allowed. Function: `mmky` and `mmkh` (package: modifiedmk)
+<<<<<<< HEAD
 * **Seasonal Mann-Kendall**: seasonality, non-parametric, no temporal autocorelation, identical distribution. Function: `smk.test` (package: trend); identical distribution: regular and constant gap between samplings. same frequency
+=======
+* **Seasonal Mann-Kendall**: seasonality, non-parametric, no temporal autocorelation, identical distribution. Function: `smk.test` (package: trend)
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 The packages trend, Kendall, and modifiedmk also include other modifications to monotonic trend tests. Look into the documentation for these packages if you are applying a special case.
 
@@ -87,7 +102,10 @@ LAGOSnutrient <- LAGOSdata$epi_nutr
 # what information is available for Lake Mendota?
 lake_info(name = "Lake Mendota", state = "Wisconsin")
   # lake_info can return info about a lake if you input name + state or lake id.
+<<<<<<< HEAD
 LAGOSdata <- lagosne_get()
+=======
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 # Wrangle a dataset with just Lake Mendota TP time series
 Mendotadata <- LAGOSnutrient %>%
@@ -111,8 +129,13 @@ Detecting whether the outlier is a true measurement or a mistake in the dataset 
 ```{r}
 # Remove issues 1 and 2, arrange by date
 Mendotadata <- Mendotadata %>%
+<<<<<<< HEAD
   filter(tp < 300 & sampledate > "1988-01-01")%>%
   arrange(sampledate) # sorted by date 
+=======
+  filter(tp < 300 & sampledate > "1988-01-01") %>%
+  arrange(sampledate)
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 # Re-plot data
 MendotaTP <-
@@ -128,8 +151,13 @@ We see that TP data were collected somewhere between biweekly and monthly across
 
 Common interpolation methods: 
 
+<<<<<<< HEAD
 * **Piecewise constant**: <fill in notes here> the value of nearest neighbor sample
 * **Linear**: <fill in notes here> linear interpolation
+=======
+* **Piecewise constant**: <fill in notes here>
+* **Linear**: <fill in notes here>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 * **Spline**: <fill in notes here>
 
 Linear interpolation is most common for water quality data, and fits with our understanding about how TP might change over time in this system. 
@@ -147,10 +175,17 @@ ggplot(Mendotadata, aes(x = sampledate, y = tp)) +
   geom_point(data = linearinterpolation, aes(x = Date, y = TP), color = "#c13d75ff") 
 print(MendotaTPinterpolated)
 
+<<<<<<< HEAD
 # Generate time series (smk.test needs ts, not data.frame)time series need frequency, start dates and end date
 Mendotatimeseries <- ts(linearinterpolation$TP, frequency = 12, 
                         start = c(1988, 7, 5), end = c(2013, 8, 5))
 # Run SMK test in trend package
+=======
+# Generate time series (smk.test needs ts, not data.frame)
+Mendotatimeseries <- ts(linearinterpolation$TP, frequency = 12, 
+                        start = c(1988, 7, 5), end = c(2013, 8, 5))
+# Run SMK test
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 Mendotatrend <- smk.test(Mendotatimeseries)
 
 # Inspect results
@@ -161,8 +196,12 @@ summary(Mendotatrend)
 
 What would we conclude based on these findings? Describe as you would to an educated but non-specialist audience.
 
+<<<<<<< HEAD
 > z score means the positive or negative trend, p-value > 0.05, not significant trend; S means the count of the difference between one point to the next; summary gives the each month in different years' trend; ** indicates significance trend; 
 > Oct and Nov have significant trend, which are both negative according to z value.
+=======
+>
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
  
 If a significant trend was present, we could compute a **Sen's Slope** to quantify that trend (`sens.slope` function in the trend package).
  
@@ -189,10 +228,17 @@ names(ClearCreekDischarge)[4:5] <- c("Discharge", "Approval.Code")
 ClearCreekDischarge.Monthly <- ClearCreekDischarge %>%
   mutate(Year = year(Date), 
          Month = month(Date)) %>%
+<<<<<<< HEAD
   group_by(Year, Month) %>% # why by both year and month? one value for each month for each year
   summarise(Discharge = mean(Discharge))
     
 ClearCreek_ts <- ts(ClearCreekDischarge.Monthly[[3]], frequency = 12)# 3 means seasonality
+=======
+  group_by(Year, Month) %>%
+  summarise(Discharge = mean(Discharge))
+    
+ClearCreek_ts <- ts(ClearCreekDischarge.Monthly[[3]], frequency = 12)
+>>>>>>> a41323e1b2a0e73e03c36d497f51177888a2e771
 
 ```
 
