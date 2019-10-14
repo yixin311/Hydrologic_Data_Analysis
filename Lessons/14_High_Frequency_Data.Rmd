@@ -17,7 +17,7 @@ editor_options:
 
 Wednesday we used high-frequency hydrographs to learn about how water flows through watersheds to get to streams. How do you think water chemistry is impacted by the ways water flows through a watershed?
 
->
+>Quikflow: overland, pipe; Baseflow: groundwater,soil
 
 
 ## Session Set Up
@@ -27,6 +27,14 @@ getwd()
 
 # install.packages("StreamPULSE")
 # install.packages("streamMetabolizer")
+
+install.packages("streamMetabolizer", dependencies = TRUE,
+                 repos = c("http://owi.usgs.gov/R","http://cran.rstudio.com"))
+
+library(devtools)
+install_github('streampulse/StreamPULSE')
+
+install.packages("Cairo")
 
 packages <- c(
   "dataRetrieval", 
@@ -105,7 +113,7 @@ dygraph(
 
 Look at the storm that occured around February 1st. Do you expect this storm to be a flushing or a diluting storm?
 
->
+>Nitrate is decreasing. Diluting: flow increases, nitrate concentration decreases.Chemostatic: No slope, concentration does not change with increase of flow; Flushing: concentration increases with the inrease of flow. Three states happen in different times of a flow. 
 
 ```{r}
 PotomacStorm <- Potdat %>%
@@ -119,25 +127,26 @@ ggplot(PotomacStorm, aes(x = Flow_Inst, y = Nitrate_mgl, color = dateTime)) +
 
 Did this storm exhibit clockwise or counterclockwise hysteresis?
 
->
+>counterclockwise: rising flow of a storm with concentration decreases and then with decrease of flow, the concentration rises.
 
 Which direction do hysteresis loops slope for diluting storms?
 
->
+>downward
 
 Which direction do hysteresis loops go for flushing storms?
 
->
+>upward
 
 ## Using dissolved oxygen to estimate metabolism
 
 What is "ecosystem metabolism"?
 
->
+>Gross Primary Productivity (GPP)
+>Ecosystem Respiration(ER)
 
 Why would we want to know the *GPP* and *ER* of a river reach?
 
->
+>The amount of material in a stream is important 
 
 
 The StreamPulse project is a group of researchers around the world who are measuring oxygen concentrations in streams to determine the GPP and ER of many different types of streams and rivers from around the globe. We will be using data from their website for this class period. This project uses the R package `streamMetabolizer` to compute its estimates of metabolism and allows data download from its site using the `StreamPULSE` R package.
@@ -169,7 +178,9 @@ $\frac{dO_2}{dt} = P_t + R_t + D_t$
 
 What are P~t~, R~t~ and D~t~? What are these parameters functions of?
 
->
+>P~t: productivity: sunlight,+
+>R~t: Respriation: all the time,-
+>D~t: Dispersion, flow, +
 
 
 Visit https://data.streampulse.org/ 
