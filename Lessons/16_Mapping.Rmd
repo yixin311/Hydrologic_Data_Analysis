@@ -116,7 +116,7 @@ print(Neusebasin)
 
 What features are prevalent in the Neuse River basin? Where do certain features occur in the hydrologic network? How does this distribution compare to nearby basins?
 
-> 
+> stream, shoreline, right and left bank, intracoastal waterway
 
 ## Closing Discussion
 
