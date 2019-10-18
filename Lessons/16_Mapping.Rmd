@@ -16,6 +16,9 @@ editor_options:
 ## Opening Discussion
 
 What are the big ideas from last class about mapping?
+1.projections: can be unique to specific area, 
+2."sdt_as_sf" can be used in R to map
+3. geometry: may have multiple lon and lan
 
 ## Session Set Up
 
@@ -32,10 +35,11 @@ theme_set(theme_classic())
 ## Spatial datasets: line and polygon objects
 
 Today, we will be working with the USA rivers shape file (see metadata file in README folder) and the Watershed Boundary Dataset, accessed from USGS here: https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View. We will be using the dataset for the HUC 2 designation 03, which represents the South Atlantic-Gulf region. Additional shapefiles for other regions are available at the link. 
+the link can give us data we need.
 
 ### Water features line objects
 ```{r}
-waterfeatures <- st_read("../Data/Raw/hydrogl020.dbf")
+waterfeatures <- st_read("./Data/Raw/hydrogl020.dbf")
 class(waterfeatures)
 
 # Filter for North Carolina

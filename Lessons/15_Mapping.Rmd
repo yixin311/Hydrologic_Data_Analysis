@@ -62,7 +62,7 @@ theme_set(theme_classic())
 options(scipen = 100)
 
 # Load LAGOSNE data into R session
-LAGOSdata <- lagosne_load()
+#LAGOSdata <- lagosne_load()
 # If the lagosne_get function has not worked, use this code: 
 load(file = "./Data/Raw/LAGOSdata.rda")
 
@@ -170,7 +170,7 @@ secchi_maine.summary <- Maine_combined %>%
 2. Create a plot of mean secchi depth for lakes in Maine, with mean secchi depth designated as color and the lake area as the size of the dot. Remember that you are using size in the aesthetics and should remove the size = 1 from the other part of the code. Adjust the transparency of points as needed.
 
 ```{r}
-secchi_maine.spatial <- st_as_sf(secchi_maine.summary, coords = c("long", "lat"), crs = 4326)
+secchi_maine.spatial <- st_as_sf(secchi_maine.summary, coords = c("long", "lat"), crs = 4326)# crs is the projection system
 
 Secchi_maine_area_plot <- ggplot() +
   geom_sf(data = states.maine, fill = "white") +
@@ -231,12 +231,13 @@ Secchiplot <- ggplot() +
   geom_sf(data = states.subset, fill = "white") +
   geom_sf(data = secchi.decade.spatial, aes(color = secchi.mean), 
           alpha = 0.5, size = 1) +
-  facet_wrap(vars(decade), ncol = 5) +
+  facet_wrap(vars(decade), ncol = 5) +# facet wrap
   scale_color_viridis_c() +
   labs(color = "Average Secchi Depth (m)") +
   theme(legend.position = "top")
 print(Secchiplot)
 ```
+in 1970, Clean Water Act颁布，测量点增加
 
 Faceting can be an effective way to visualize data over time. But, R has additional functionality that we can visualize these changes over time in one single graph, with the package `gganimate`. Let's build an animated plot and create a GIF. 
 
@@ -250,11 +251,13 @@ Secchi.Animation <- ggplot() +
   scale_color_viridis_c() +
   theme(legend.position = "top") +
   #gganimate code here:
-  labs(title = 'Decade: {closest_state}', color = "Average Secchi Depth (m)") +
-  transition_states(decade, state_length = 1, transition_length = 0) +
+  labs(title = 'Decade: {closest_state}', color = "Average Secchi Depth (m)") +#Decade: {closest_state}, like decade, 1920 
+  transition_states(decade, state_length = 1, transition_length = 0) + # states like the steps
   enter_appear() +
   exit_disappear() 
+print(Secchi.Animation)
 
+# how to save a plot:
 #anim_save('Secchi.Animation.gif', animate(Secchi.Animation, height = 400, wid = 600, renderer = gifski_renderer(loop = TRUE)))
 
 ```
