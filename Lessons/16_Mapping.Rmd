@@ -65,7 +65,7 @@ print(Waterfeaturesplot)
 
 We will upload the HUC6 watershed designations for North Carolina. Note that in the Watersheds_Spatial folder, there are many different shape file datasets going from HUC2 (largest) to HUC16 (smallest) and NWIS drainage lines. These are all downloaded as zip from the Watershed Boundary Dataset (WBD).
 ```{r}
-HUC6 <- st_read("../Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
+HUC6 <- st_read("./Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
 
 summary(HUC6$States)
 HUC6.NC <- HUC6 %>%
