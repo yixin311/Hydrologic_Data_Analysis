@@ -95,7 +95,7 @@ Secchi_maine_area_plot <- ggplot() +
   geom_sf(data = secchi_maine.spatial, aes(color = secchi.mean, size = area), 
           alpha = 0.5) +
   scale_color_viridis_c() +
-  labs(color = "Average Secchi Depth (m)", size = "Lake Area(ha)") +
+  labs(color = "Average Secchi Depth (m)", size = "Lake Area (ha)") +
   theme(legend.position = "top")
 print(Secchi_maine_area_plot)
 ```
@@ -131,14 +131,20 @@ What would you change about the legend to make it a more effective visualization
 secchi_depthVSlake_area.plot <-
   ggplot(secchi_maine.summary, aes(x= area, y = secchi.mean))+
   geom_point()+
-  labs(x = "Lake area (ha)", y = "secchi.mean (m)")
+  labs(x = "Lake area (ha)", y = "Mean Secchi Depth (m)")
 print(secchi_depthVSlake_area.plot)
 
 secchi_depthVSlake_depth.plot <-
   ggplot(secchi_maine.summary, aes(x= depth, y = secchi.mean))+
   geom_point()+
-  labs(x = "Lake depth (m)", y = "secchi.mean (m)")
+  labs(x = "Lake depth (m)", y = "Mean Secchi Depth (m)")
 print(secchi_depthVSlake_depth.plot)
+
+secchi_area_model <- lm(data = secchi_maine.summary, secchi.mean ~ log(area))
+summary(secchi_area_model)
+
+secchi_depth_model <- lm(data = secchi_maine.summary, secchi.mean ~ log(depth))
+summary(secchi_depth_model)
 ```
 
 > 
@@ -148,13 +154,27 @@ print(secchi_depthVSlake_depth.plot)
 10. Wrangle the USA rivers and HUC6 watershed boundaries dataset so that they include only the features present in Florida (FL). Adjust the coordinate reference systems if necessary to ensure they use the same projection. 
 
 ```{r}
+waterfeatures.FL <- filter(waterfeatures, STATE == "FL")
+HUC6.FL <- HUC6 %>%
+  filter(States %in% "FL")
 
+waterfeatures.FL <- st_set_crs(waterfeatures.FL, 4269)
+HUC6.FL <- st_set_crs(HUC6.FL,4269)
+st_crs(waterfeatures.FL)
+st_crs(HUC6.FL)
 ```
 
 11. Create a map of watershed boundaries in Florida, with the layer of water features on top. Color the watersheds gray (make sure the lines separating watersheds are still visible) and color the water features by type. 
 
 ```{r}
-
+FLlayers <- ggplot() +
+  geom_sf(data = HUC6.FL, color = "darkgray", alpha = 0.5) +
+  geom_sf(data = waterfeatures.FL, aes(fill = FEATURE, color = FEATURE)) +
+  labs(x = "Longitude",y = "Latitude",title = "Florida Watershed", 
+       color = "Feature", fill = "Feature")+
+  scale_color_viridis_d(option = "magma", end = 0.9) +
+  scale_fill_viridis_d(option = "magma", end = 0.9)
+print(FLlayers)
 ```
 
 12. What are the dominant water features in Florida? How does this distribution differ (or not) compared to North Carolina?
