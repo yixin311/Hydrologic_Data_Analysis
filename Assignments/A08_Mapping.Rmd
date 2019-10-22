@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Mapping"
-author: "Student Name"
+author: "Yixin Wen"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -28,6 +28,21 @@ The completed exercise is due on 23 October 2019 at 9:00 am.
 4. Load the lagos database, the USA rivers water features shape file, and the HUC6 watershed shape file.
 
 ```{r setup}
+getwd()
+
+library("tidyverse")
+library("lubridate")
+library("cowplot")
+library("LAGOSNE")
+library("sf")
+library("maps")
+library("viridis")
+
+theme_set(theme_classic())
+
+load(file = "./Data/Raw/LAGOSdata.rda")
+waterfeatures <- st_read("./Data/Raw/hydrogl020.dbf")
+HUC6 <- st_read("./Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
 
 ```
 
@@ -42,25 +57,66 @@ Complete the in-class exercise from lesson 15, to map average secchi depth measu
 5. Filter the states and secchi depth datasets so that they contain Maine only. For the secchi depth dataset, create a summary dataset with just the mean secchi depth. 
 
 ```{r}
+states <- st_as_sf(map(database = "state", plot = TRUE, fill = TRUE, col = "white"))
+states.maine <- filter(states, ID %in% "maine")
 
+LAGOSlocus <- LAGOSdata$locus
+LAGOSstate <- LAGOSdata$state
+LAGOSnutrient <- LAGOSdata$epi_nutr
+LAGOSlimno <- LAGOSdata$lakes_limno
+
+Maine_combined <- 
+  left_join(LAGOSnutrient, LAGOSlocus) %>% 
+  left_join(., LAGOSlimno) %>%
+  left_join(., LAGOSstate) %>%
+  filter(state == "ME") %>% 
+  select(lagoslakeid, sampledate, secchi, lake_area_ha, maxdepth, nhd_lat, nhd_long, state)
+
+secchi_maine.summary <- Maine_combined %>%
+  group_by(lagoslakeid) %>%
+  summarise(secchi.mean = mean(secchi),
+            area = mean(lake_area_ha),
+            depth = mean(maxdepth),
+            lat = mean(nhd_lat), 
+            long = mean(nhd_long)) %>%
+  drop_na()
+
+secchi_maine_depth.summary <- secchi_maine.summary %>%
+  select("lagoslakeid", "secchi.mean")
 ```
 
 6. Create a plot of mean secchi depth for lakes in Maine, with mean secchi depth designated as color and the lake area as the size of the dot. Remember that you are using size in the aesthetics and should remove the size = 1 from the other part of the code. Adjust the transparency of points as needed.
 
 ```{r}
+secchi_maine.spatial <- st_as_sf(secchi_maine.summary, coords = c("long", "lat"), crs = 4326)
 
+Secchi_maine_area_plot <- ggplot() +
+  geom_sf(data = states.maine, fill = "white") +
+  geom_sf(data = secchi_maine.spatial, aes(color = secchi.mean, size = area), 
+          alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(color = "Average Secchi Depth (m)", size = "Lake Area(ha)") +
+  theme(legend.position = "top")
+print(Secchi_maine_area_plot)
 ```
 
 7. Create a second plot, but this time use maximum depth of the lake as the size of the dot. 
 
 ```{r}
-
+Secchi_maine_maxdepth_plot <- ggplot() +
+  geom_sf(data = states.maine, fill = "white") +
+  geom_sf(data = secchi_maine.spatial, aes(color = secchi.mean, size = depth), 
+          alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(color = "Average Secchi Depth (m)", size = "Lake depth (m)") +
+  theme(legend.position = "top")
+print(Secchi_maine_maxdepth_plot)
 ```
 
 8. Plot these maps in the same plot with the `plot_grid` function. Don't worry about adjusting the legends (if you have extra time this would be a good bonus task).
 
 ```{r}
-
+plot_grid(Secchi_maine_area_plot,Secchi_maine_depth_plot)
 ```
 
 What would you change about the legend to make it a more effective visualization? 
@@ -72,7 +128,17 @@ What would you change about the legend to make it a more effective visualization
 *Note: consider log-transforming a predictor variable if appropriate*
 
 ```{r}
+secchi_depthVSlake_area.plot <-
+  ggplot(secchi_maine.summary, aes(x= area, y = secchi.mean))+
+  geom_point()+
+  labs(x = "Lake area (ha)", y = "secchi.mean (m)")
+print(secchi_depthVSlake_area.plot)
 
+secchi_depthVSlake_depth.plot <-
+  ggplot(secchi_maine.summary, aes(x= depth, y = secchi.mean))+
+  geom_point()+
+  labs(x = "Lake depth (m)", y = "secchi.mean (m)")
+print(secchi_depthVSlake_depth.plot)
 ```
 
 > 
