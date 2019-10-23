@@ -41,7 +41,7 @@ library("viridis")
 theme_set(theme_classic())
 
 load(file = "/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/LAGOSdata.rda")
-waterfeatures <- st_read("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_AnalysisData/Raw/hydrogl020.dbf")
+waterfeatures <- st_read("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/hydrogl020.dbf")
 HUC6 <- st_read("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
 
 ```
@@ -103,14 +103,14 @@ print(Secchi_maine_area_plot)
 7. Create a second plot, but this time use maximum depth of the lake as the size of the dot. 
 
 ```{r}
-Secchi_maine_maxdepth_plot <- ggplot() +
+Secchi_maine_depth_plot <- ggplot() +
   geom_sf(data = states.maine, fill = "white") +
   geom_sf(data = secchi_maine.spatial, aes(color = secchi.mean, size = depth), 
           alpha = 0.5) +
   scale_color_viridis_c() +
   labs(color = "Average Secchi Depth (m)", size = "Lake depth (m)") +
   theme(legend.position = "top")
-print(Secchi_maine_maxdepth_plot)
+print(Secchi_maine_depth_plot)
 ```
 
 8. Plot these maps in the same plot with the `plot_grid` function. Don't worry about adjusting the legends (if you have extra time this would be a good bonus task).
@@ -171,7 +171,7 @@ HUC6.FL <- st_set_crs(HUC6.FL,4269)
 FLlayers <- ggplot() +
   geom_sf(data = HUC6.FL, color = "darkgray", alpha = 0.5) +
   geom_sf(data = waterfeatures.FL, aes(fill = FEATURE, color = FEATURE)) +
-  labs(x = "Longitude",y = "Latitude",title = "Florida Watershed", 
+  labs(title = "Florida Watershed", 
        color = "Feature", fill = "Feature")+
   scale_color_viridis_d(option = "magma", end = 0.9) +
   scale_fill_viridis_d(option = "magma", end = 0.9)
