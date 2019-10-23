@@ -40,9 +40,9 @@ library("viridis")
 
 theme_set(theme_classic())
 
-load(file = "./Data/Raw/LAGOSdata.rda")
-waterfeatures <- st_read("./Data/Raw/hydrogl020.dbf")
-HUC6 <- st_read("./Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
+load(file = "/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/LAGOSdata.rda")
+waterfeatures <- st_read("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_AnalysisData/Raw/hydrogl020.dbf")
+HUC6 <- st_read("/Users/yixinwen/Box/Duke/2019 Fall/Hydrologic Data Analysis/Hydrologic_Data_Analysis/Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
 
 ```
 
@@ -121,33 +121,36 @@ plot_grid(Secchi_maine_area_plot,Secchi_maine_depth_plot)
 
 What would you change about the legend to make it a more effective visualization? 
 
-> 
+> I will change the legends of lake area and lake depth, since they represent different variables but right now they have the same legend signature. Using different legend may make this plot a better visualization.
 
 9. What relationships do you see between secchi depth, lake area, and lake depth? Which of the two lake variables seems to be a stronger determinant of secchi depth? (make a scatterplot and run a regression to test this)
 
 *Note: consider log-transforming a predictor variable if appropriate*
 
 ```{r}
+secchi_area_model <- lm(data = secchi_maine.summary, log(secchi.mean) ~ log(area))
+summary(secchi_area_model)
+
+secchi_depth_model <- lm(data = secchi_maine.summary, log(secchi.mean)~ log(depth))
+summary(secchi_depth_model)
+
 secchi_depthVSlake_area.plot <-
   ggplot(secchi_maine.summary, aes(x= area, y = secchi.mean))+
   geom_point()+
-  labs(x = "Lake area (ha)", y = "Mean Secchi Depth (m)")
+  scale_x_log10() + scale_y_log10()+
+  labs(x = "Log(Lake area (ha))", y = "Log(Mean Secchi Depth (m))")
 print(secchi_depthVSlake_area.plot)
 
 secchi_depthVSlake_depth.plot <-
   ggplot(secchi_maine.summary, aes(x= depth, y = secchi.mean))+
   geom_point()+
-  labs(x = "Lake depth (m)", y = "Mean Secchi Depth (m)")
+  scale_x_log10() + scale_y_log10()+
+  labs(x = "Log(Lake depth (m))", y = "Log(Mean Secchi Depth (m))")
 print(secchi_depthVSlake_depth.plot)
 
-secchi_area_model <- lm(data = secchi_maine.summary, secchi.mean ~ log(area))
-summary(secchi_area_model)
-
-secchi_depth_model <- lm(data = secchi_maine.summary, secchi.mean ~ log(depth))
-summary(secchi_depth_model)
 ```
 
-> 
+> The relationship between secchi depth and lake area is not obvious in log linear regression, the multiple R-squared is only around 8%. The relationship between secchi depth and lake depth is stronger in log linear regression, the multiple R-squared is 52.65%. Thus, lake depth is a stronger determinant of secchi depth.
 
 ## Mapping water features and watershed boundaries
 
@@ -160,8 +163,6 @@ HUC6.FL <- HUC6 %>%
 
 waterfeatures.FL <- st_set_crs(waterfeatures.FL, 4269)
 HUC6.FL <- st_set_crs(HUC6.FL,4269)
-st_crs(waterfeatures.FL)
-st_crs(HUC6.FL)
 ```
 
 11. Create a map of watershed boundaries in Florida, with the layer of water features on top. Color the watersheds gray (make sure the lines separating watersheds are still visible) and color the water features by type. 
@@ -179,21 +180,24 @@ print(FLlayers)
 
 12. What are the dominant water features in Florida? How does this distribution differ (or not) compared to North Carolina?
 
-> 
+> Stream and shoreline are the dominant water features in Florida. There are much more shorelines in Florida compared to NC. In Florida, streams are seldom in the south part, they are distributed in central or north part of the Florida. In NC, streams are mostly distributed in central and west part, only a small part of east does not have streams. 
 
 ## Reflection
 13. What are 2-3 conclusions or summary points about mapping you learned through your analysis?
 
->
+>1.projections: can be unique to specific area, 
+2."sdt_as_sf" can be used in R to map
+3. “st_set_crs” can be used to set projections for different dataset.
+
 
 14. What data, visualizations, and/or models supported your conclusions from 13?
 
-> 
+> the florida watershed map
 
 15. Did hands-on data analysis impact your learning about mapping relative to a theory-based lesson? If so, how?
 
->
+>Hands-on data analysis can let me explore the theory on my own, and it can help me understand it better from examples. 
 
 16.	How did the real-world data compare with your expectations from theory?
 
->
+>The real-world map sometimes does not have the correct display since the data may not be correct.
