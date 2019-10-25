@@ -10,20 +10,23 @@ editor_options:
 
 ## What questions will your team address?
 
-1. 
 
-2. 
 
+1. what physical and chemical factors affect the number of SDWIS violation for dbps in active Alaska community water system
+
+2. how are carbon concentration in Alaska streams changing over time?
 <add more numbers as needed>
+
+3. how  discharge affect the oc concentration?
 
 ## What hypotheses will your team address? 
 
 * Hypotheses should relate directly to your questions. Each numbered hypothesis should match up with the correponding numbered question. 
 * There may be multiple working hypotheses for a single question. If this is the case, note each hypothesis as 1a, 1b. etc.
 
-1. 
+1. 1a: H1: increased OC will increase the violation number
 
-2. 
+2. H2: 
 
 <add more numbers as needed>
 
