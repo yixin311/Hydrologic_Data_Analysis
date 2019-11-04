@@ -59,6 +59,10 @@ Complete the in-class exercise from lesson 15, to map average secchi depth measu
 ```{r}
 states <- st_as_sf(map(database = "state", plot = TRUE, fill = TRUE, col = "white"))
 states.maine <- filter(states, ID %in% "maine")
+states.maine <-st_as_sf(map(database = "maine", plot = TRUE, fill = TRUE, col = "white"))
+states.maineplot <- ggplot(states.maine) + geom_sf(fill = "white")+
+  labs(title = "Maine")
+print(states.maineplot)
 
 LAGOSlocus <- LAGOSdata$locus
 LAGOSstate <- LAGOSdata$state
@@ -165,6 +169,16 @@ waterfeatures.FL <- st_set_crs(waterfeatures.FL, 4269)
 HUC6.FL <- st_set_crs(HUC6.FL,4269)
 ```
 
+
+```{r}
+waterfeatures.ME <- filter(waterfeatures, STATE == "ME")
+HUC6.ME <- HUC6 %>%
+  filter(States %in% "ME")
+
+waterfeatures.ME <- st_set_crs(waterfeatures.ME, 4269)
+HUC6.ME <- st_set_crs(HUC6.ME,4269)
+```
+
 11. Create a map of watershed boundaries in Florida, with the layer of water features on top. Color the watersheds gray (make sure the lines separating watersheds are still visible) and color the water features by type. 
 
 ```{r}
@@ -176,6 +190,17 @@ FLlayers <- ggplot() +
   scale_color_viridis_d(option = "magma", end = 0.9) +
   scale_fill_viridis_d(option = "magma", end = 0.9)
 print(FLlayers)
+```
+
+```{r}
+MElayers <- ggplot() +
+  geom_sf(data = HUC6.ME, color = "darkgray", alpha = 0.5) +
+  geom_sf(data = waterfeatures.ME, aes(fill = FEATURE, color = FEATURE)) +
+  labs(title = "Maine Watershed", 
+       color = "Feature", fill = "Feature")+
+  scale_color_viridis_d(option = "magma", end = 0.9) +
+  scale_fill_viridis_d(option = "magma", end = 0.9)
+print(MElayers)
 ```
 
 12. What are the dominant water features in Florida? How does this distribution differ (or not) compared to North Carolina?
